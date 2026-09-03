@@ -1365,7 +1365,7 @@ def library_cards():
         if t.get("placeholder"):
             continue
         label = PILLARS[t["pillar"]][0].split(chr(183))[1].strip()
-        tags = "|".join(TAGS.get(t["slug"], []))
+        tags = "|".join(feel_key(x) for x in TAGS.get(t["slug"], []))
         start = ""
         if t.get("start_here"):
             start = '\n          <p class="start-here">Start here</p>'
@@ -1382,9 +1382,18 @@ def library_cards():
     return "\n".join(out)
 
 
+def feel_key(f):
+    """Machine key for a feeling. Data attributes carry these, never the
+    display label: the label has an apostrophe in it ("Can't sleep") and any
+    host that re-serialises the HTML can escape that in a way the attribute
+    parser truncates. Netlify's pretty-URL pass did exactly that and silently
+    broke the sleep filter in production."""
+    return re.sub(r"[^a-z0-9]+", "-", f.lower()).strip("-")
+
+
 def pill_row():
     pills = "\n".join(
-        f'        <button type="button" class="pill" data-feeling="{f}"'
+        f'        <button type="button" class="pill" data-feeling="{feel_key(f)}"'
         f' aria-pressed="false">{f}</button>'
         for f in FEELINGS
     )
