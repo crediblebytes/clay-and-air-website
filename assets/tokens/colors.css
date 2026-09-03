@@ -1,0 +1,73 @@
+/* Ratio is the system. Bone ~70%, soot ~20%, terracotta ~8%, ochre ~2%. */
+:root{
+  /* base */
+  --bone:#EDE7DC;
+  --paper:#F5F1E8;
+  --bone-deep:#E2DACB;
+  --soot:#1C1917;
+  --soot-70:#4A4441;
+  --soot-40:#8A827C;
+  --rule:#D6CCBA;
+  --terracotta:#9C4A2F;
+  --terracotta-deep:#7A3722;
+  --ochre:#C98A2B;
+
+  /* semantic — surfaces */
+  --surface-canvas:var(--bone);
+  --surface-card:var(--paper);
+  --surface-well:var(--bone-deep);
+  --surface-anchor:var(--soot);
+
+  /* semantic — text */
+  --text-body:var(--soot);
+  --text-secondary:var(--soot-70);
+  --text-tertiary:var(--soot-40);
+  --text-disabled:var(--soot-40);
+  --text-inverse:var(--bone);
+  --text-link:var(--terracotta);
+  --text-link-hover:var(--terracotta-deep);
+  --text-accent:var(--terracotta);
+  --text-bright:var(--ochre);
+
+  /* semantic — lines */
+  --border-hairline:var(--rule);
+  --border-strong:var(--soot);
+  --border-accent:var(--terracotta);
+
+  /* semantic — controls */
+  --btn-primary-bg:var(--soot);
+  --btn-primary-fg:var(--bone);
+  --btn-primary-bg-hover:var(--terracotta-deep);
+  --btn-secondary-fg:var(--soot);
+  --btn-secondary-border:var(--soot);
+  --btn-secondary-bg-hover:var(--bone-deep);
+  --field-bg:var(--paper);
+  --field-border:var(--rule);
+  --field-border-focus:var(--soot);
+}
+
+/* Dark sections are full-bleed soot with bone text — never a gray, never a tint. */
+.ca-invert{
+  --surface-canvas:var(--soot);
+  --surface-card:var(--soot);
+  --surface-well:var(--soot);
+  --text-body:var(--bone);
+  --text-secondary:#B8AFA2;
+  --text-tertiary:#8A827C;
+  --text-inverse:var(--soot);
+  --border-hairline:#3A3532;
+  --border-strong:var(--bone);
+  --btn-primary-bg:var(--bone);
+  --btn-primary-fg:var(--soot);
+  --btn-primary-bg-hover:var(--ochre);
+  --btn-secondary-fg:var(--bone);
+  --btn-secondary-border:var(--bone);
+  --btn-secondary-bg-hover:#302B28;
+  --field-bg:#26221F;
+  --field-border:#3A3532;
+  --field-border-focus:var(--bone);
+  --text-link:#D98A6B;
+  --text-link-hover:var(--ochre);
+  background:var(--soot);
+  color:var(--bone);
+}

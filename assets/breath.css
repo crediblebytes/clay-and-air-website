@@ -1,0 +1,454 @@
+/* Clay & Air breath library.
+
+   The design system's own token and base files are used verbatim from
+   assets/tokens/. Nothing below redefines a colour, a size or a spacing step:
+   this file is only the pieces the library needs that the system does not
+   already ship, built from its tokens and its component specs.
+
+   Header and footer follow ui_kits/website/Chrome.jsx.
+   Pills follow ui_kits/website/Protocols.jsx.
+   Cards follow components/surfaces/Card.jsx.
+   Steps follow ui_kits/website/Protocol.jsx.
+*/
+
+@import url("tokens/fonts.css");
+@import url("tokens/colors.css");
+@import url("tokens/typography.css");
+@import url("tokens/spacing.css");
+@import url("tokens/borders.css");
+@import url("tokens/motion.css");
+@import url("tokens/base.css");
+
+/* ---------- shared type helpers ---------- */
+
+.label {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 var(--eyebrow-gap);
+  display: block;
+}
+.label--tertiary { color: var(--text-tertiary); }
+.body-lg { font-size: var(--size-body-lg); line-height: var(--lh-body-lg); }
+.small { font-size: var(--size-small); line-height: var(--lh-small); }
+.muted { color: var(--text-secondary); }
+.tertiary { color: var(--text-tertiary); }
+p { margin: 0 0 var(--space-4); }
+p:last-child { margin-bottom: 0; }
+
+.dot { opacity: 0.5; }
+
+/* ---------- layout ---------- */
+
+.wrap { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--gutter); }
+.section { padding: var(--section-gap) 0; }
+.section--tight { padding: var(--space-8) 0; }
+.section--paper { background: var(--surface-card); }
+.rule { border: 0; border-top: var(--hairline) solid var(--border-hairline); margin: 0; }
+
+/* ---------- header (Chrome.jsx) ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bone);
+  border-bottom: var(--hairline) solid var(--border-hairline);
+}
+.site-header .wrap {
+  height: 76px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-9);
+}
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--soot);
+  text-decoration: none;
+}
+/* the compact lockup carries the wordmark, so no live text beside it.
+   60px tall puts the disc at 60px and the wordmark at ~22px, matching
+   Chrome.jsx, and sits inside the compact cut's 40-167px range. */
+.lockup img { height: 60px; width: auto; display: block; }
+.lockup:hover { color: var(--soot); }
+
+.site-nav { display: flex; gap: var(--space-6); margin-left: auto; }
+.site-nav a {
+  font: var(--weight-medium) var(--size-label) / 1 var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--text-secondary);
+  border-bottom: var(--hairline) solid transparent;
+  padding-bottom: 3px;
+  transition: var(--transition-color);
+  white-space: nowrap;
+}
+.site-nav a:hover { color: var(--soot); }
+.site-nav a[aria-current="page"] {
+  color: var(--soot);
+  border-bottom-color: var(--border-accent);
+}
+
+/* ---------- pills (Protocols.jsx) ---------- */
+
+.pills { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-6); }
+.pill {
+  font: var(--weight-medium) var(--size-label) / 1 var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  padding: 9px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  border: var(--hairline) solid var(--border-hairline);
+  transition: var(--transition-color);
+}
+.pill:hover { color: var(--soot); border-color: var(--border-strong); }
+.pill[aria-pressed="true"] {
+  background: var(--soot);
+  color: var(--bone);
+  border-color: var(--soot);
+}
+.pill[aria-pressed="true"]:hover {
+  background: var(--terracotta-deep);
+  border-color: var(--terracotta-deep);
+  color: var(--bone);
+}
+.pill--clear { color: var(--text-tertiary); }
+
+.library-empty { margin: var(--space-8) 0 0; color: var(--text-secondary); }
+
+/* non-interactive tags on a technique page */
+.tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-8); max-width: var(--measure-prose); }
+.tag {
+  font: var(--weight-medium) var(--size-label) / 1 var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  padding: 9px 14px;
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+}
+
+/* ---------- cards (Card.jsx) ---------- */
+
+.card {
+  display: block;
+  background: var(--surface-card);
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  padding: var(--card-padding);
+  text-decoration: none;
+  color: var(--text-body);
+  transition: var(--transition-color);
+}
+a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
+.card h3 { font: var(--weight-display) var(--size-h3) / var(--lh-h3) var(--font-display); margin: 0 0 var(--space-3); }
+.card p { font-size: var(--size-body); color: var(--text-secondary); margin: 0; }
+
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+
+/* ---------- the library grid ---------- */
+
+.library { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); margin-top: var(--space-2); }
+.tech-card { display: flex; flex-direction: column; }
+.tech-card[hidden] { display: none; }
+.tech-card > .label { margin-bottom: var(--eyebrow-gap); }
+.tech-card h3 { margin: 0 0 var(--space-3); }
+.tech-card .use {
+  font-size: var(--size-small);
+  line-height: var(--lh-small);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-5);
+  flex: 1 1 auto;
+}
+.tech-card .card-meta {
+  font: var(--weight-medium) var(--size-label) / 1.4 var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: auto 0 0;
+  padding-top: var(--space-4);
+  border-top: var(--hairline) solid var(--border-hairline);
+}
+.tech-card .start-here { margin: 0 0 var(--space-3); }
+
+/* ---------- start-here / signature marker ---------- */
+
+.start-here {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-accent);
+  display: block;
+  margin: -4px 0 14px;
+}
+
+/* ---------- technique page ---------- */
+
+.technique { padding: var(--space-9) 0 0; }
+.technique--index { padding-bottom: var(--section-gap); }
+.technique h1 {
+  font: var(--weight-display) var(--size-h1) / var(--lh-h1) var(--font-display);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--space-4);
+}
+.technique .purpose {
+  font-size: var(--size-body-lg);
+  line-height: var(--lh-body-lg);
+  color: var(--text-secondary);
+  max-width: var(--measure-prose);
+  margin: 0 0 var(--space-5);
+}
+
+/* at a glance, under the heading */
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-5);
+  padding: var(--space-4) 0;
+  border-top: var(--hairline) solid var(--border-hairline);
+  border-bottom: var(--hairline) solid var(--border-hairline);
+  margin: var(--space-5) 0 var(--space-6);
+  max-width: 720px;
+}
+.meta-items {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* before you start */
+.before {
+  background: var(--surface-card);
+  border: var(--hairline) solid var(--border-hairline);
+  border-left: var(--rule-accent-width) solid var(--border-accent);
+  border-radius: var(--radius);
+  padding: var(--card-padding);
+  margin: 0 0 var(--space-8);
+  max-width: 720px;
+}
+.before ul { list-style: none; margin: 0; padding: 0; }
+.before li { padding: var(--space-3) 0; border-bottom: var(--hairline) solid var(--border-hairline); }
+.before li:first-child { border-top: var(--hairline) solid var(--border-hairline); }
+.before li:last-child { border-bottom: 0; padding-bottom: 0; }
+
+/* the basics, start-here card only */
+.basics {
+  background: var(--surface-card);
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  padding: var(--card-padding);
+  margin: 0 0 var(--space-8);
+  max-width: 720px;
+}
+.basics-intro { font-size: var(--size-body); line-height: var(--lh-body); margin: 0 0 var(--space-2); }
+.basics-list { margin-top: var(--space-5); }
+.basic { padding: var(--space-5) 0; border-top: var(--hairline) solid var(--border-hairline); }
+.basic:last-child { padding-bottom: 0; }
+.basic .label { color: var(--text-body); margin-bottom: var(--space-2); }
+.basic p:not(.label) { font-size: var(--size-body); line-height: var(--lh-body); margin: 0; }
+
+/* how to run it (Protocol.jsx) */
+.pattern { margin: 0 0 var(--space-7); max-width: var(--measure-prose); }
+.steps { list-style: none; margin: 0; padding: 0; border-top: var(--hairline) solid var(--border-hairline); }
+.steps li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: var(--space-5);
+  padding: var(--space-5) 0;
+  border-bottom: var(--hairline) solid var(--border-hairline);
+  align-items: baseline;
+}
+.steps .num {
+  font: var(--weight-medium) var(--size-cadence) / 1 var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--text-accent);
+}
+.steps .text { font-size: var(--size-body); line-height: var(--lh-body); }
+
+.note { max-width: var(--measure-prose); margin: 0 0 var(--space-7); }
+.block { max-width: var(--measure-prose); margin: 0 0 var(--space-8); }
+.block p:not(.label) { font-size: var(--size-body-lg); line-height: var(--lh-body-lg); }
+.block--tight { margin: calc(var(--space-4) * -1) 0 var(--space-7); }
+.block--tight p:not(.label) { font-size: var(--size-small); line-height: var(--lh-small); }
+
+.benefits { max-width: var(--measure-prose); margin: 0 0 var(--space-9); }
+.benefits ul { list-style: none; margin: 0; padding: 0; }
+.benefits li {
+  font-size: var(--size-body);
+  line-height: var(--lh-body);
+  padding: var(--space-3) 0;
+  border-bottom: var(--hairline) solid var(--border-hairline);
+}
+.benefits li:first-child { border-top: var(--hairline) solid var(--border-hairline); }
+
+/* video */
+.video { margin: 0 0 var(--space-9); max-width: 640px; }
+.video-plate {
+  background: var(--surface-well);
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-5);
+}
+.video-plate .label { margin: 0; color: var(--text-tertiary); }
+.video-plate--embed { position: relative; padding: 0; display: block; background: var(--soot); }
+.video-plate--embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video figcaption { margin-top: var(--space-3); }
+.video-pending {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  border-top: var(--hairline) solid var(--border-hairline);
+  border-bottom: var(--hairline) solid var(--border-hairline);
+  padding: var(--space-4) 0;
+  margin: 0 0 var(--space-7);
+  max-width: 640px;
+}
+
+/* ---------- pillar and sibling lists ---------- */
+
+.tech-list { border-top: var(--hairline) solid var(--border-hairline); margin: 0; padding: 0; list-style: none; }
+.tech-list li { border-bottom: var(--hairline) solid var(--border-hairline); }
+.tech-list a,
+.tech-list .pending {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-4) var(--space-7);
+  align-items: baseline;
+  padding: var(--space-5) 0;
+  text-decoration: none;
+  color: var(--text-body);
+  transition: var(--transition-color);
+}
+.tech-list a:hover { background: var(--surface-well); color: var(--text-body); }
+.tech-list .name { font: var(--weight-display) var(--size-h3) / var(--lh-h3) var(--font-display); }
+.tech-list .use { font-size: var(--size-small); color: var(--text-secondary); grid-column: 1; max-width: var(--measure-prose); }
+.tech-list .aside { grid-row: 1; grid-column: 2; text-align: right; }
+.tech-list .pending { color: var(--text-tertiary); }
+.tech-list .pending .name { color: var(--text-tertiary); }
+
+.state-meta {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  display: block;
+}
+
+/* ---------- footer (Chrome.jsx) ---------- */
+
+.site-footer { padding: var(--space-10) 0 var(--space-8); }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-9); }
+/* full lockup at its minimum legible width: 475px puts BREATHWORK's cap
+   height at the 6.5px floor. The column is 476px. */
+.footer-lockup { width: 100%; max-width: 475px; height: auto; display: block; margin-bottom: var(--space-4); }
+.site-footer .lockup-line { margin-top: var(--space-2); }
+.site-footer .bio { margin-top: var(--space-4); color: var(--text-secondary); font-size: var(--size-small); max-width: 34ch; }
+.footer-col ul { list-style: none; padding: 0; margin: var(--space-4) 0 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.footer-col a { color: var(--bone); font-size: var(--size-small); text-decoration: none; }
+.footer-col a:hover { color: var(--ochre); }
+.footer-bottom {
+  margin-top: var(--space-9);
+  padding-top: var(--space-5);
+  border-top: var(--hairline) solid var(--border-hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+.site-footer .disclaimer { color: var(--text-tertiary); font-size: var(--size-small); max-width: 62ch; margin: 0; }
+.site-footer .copyright {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+.site-footer a { color: var(--bone); }
+.site-footer a:hover { color: var(--ochre); }
+
+/* ---------- mobile ---------- */
+
+@media (max-width: 1100px) {
+  .library { grid-template-columns: repeat(2, 1fr); }
+  .cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 900px) {
+  :root { --gutter: var(--gutter-mobile); --section-gap: var(--section-gap-mobile); }
+  .technique h1 { font-size: 34px; }
+  .library, .cards { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; gap: var(--space-7); }
+  .tech-list a, .tech-list .pending { grid-template-columns: 1fr; }
+  .tech-list .aside { grid-row: auto; grid-column: 1; text-align: left; }
+  .steps li { grid-template-columns: 36px 1fr; gap: var(--space-3); }
+  .technique { padding-top: var(--space-7); }
+}
+
+@media (max-width: 760px) {
+  .site-header .wrap {
+    height: auto;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+  }
+  .lockup img { height: 48px; }
+  .site-nav {
+    width: 100%;
+    margin-left: 0;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    border-top: var(--hairline) solid var(--border-hairline);
+    padding: var(--space-3) 0;
+  }
+}
+
+/* ---------- library lede ---------- */
+
+.lede {
+  font: var(--weight-display) var(--size-h1) / var(--lh-h1) var(--font-display);
+  letter-spacing: var(--tracking-tight);
+  max-width: 22ch;
+  margin: 0;
+}
+.lede-sub {
+  margin-top: var(--space-5);
+  color: var(--text-secondary);
+  font-size: var(--size-body-lg);
+  line-height: var(--lh-body-lg);
+  max-width: var(--measure-prose);
+}
+
+/* duration as the left column, per DESIGN.md > Iconography rule 1:
+   type first, "8 MIN" over a clock. */
+.tech-list a { grid-template-columns: 130px 1fr auto; }
+.tech-list .dur {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-body);
+}
+.tech-list .body { display: block; }
+.tech-list .body .name { display: block; }
+.tech-list .body .use { display: block; margin-top: 4px; }
+.tech-list .aside { grid-row: auto; grid-column: auto; }
+
+@media (max-width: 900px) {
+  .tech-list a { grid-template-columns: 1fr; gap: var(--space-2); }
+  .tech-list .aside { text-align: left; }
+  .lede { font-size: 34px; }
+}

@@ -1,0 +1,22 @@
+:root{
+  --weight-display:600; /* @kind font */
+  --weight-body:400; /* @kind font */
+  --weight-medium:500; /* @kind font */
+
+  --size-display:60px;   --lh-display:1.05; /* @kind other */
+  --size-h1:42px;        --lh-h1:1.12; /* @kind other */
+  --size-h2:30px;        --lh-h2:1.2; /* @kind other */
+  --size-h3:21px;        --lh-h3:1.3; /* @kind other */
+  --size-body-lg:19px;   --lh-body-lg:1.65; /* @kind other */
+  --size-body:17px;      --lh-body:1.65; /* @kind other */
+  --size-small:15px;     --lh-small:1.5; /* @kind other */
+  --size-label:12px;     --lh-label:1.2; /* @kind other */
+  --size-cadence:14px;   --lh-cadence:1; /* @kind other */
+
+  --tracking-label:0.14em; /* @kind font */
+  --tracking-cadence:0.25em; /* @kind font */
+  --tracking-tight:-0.01em; /* @kind font */
+
+  --measure-prose:68ch; /* @kind spacing */
+  --underline-offset:0.12em; /* @kind spacing */
+}

@@ -1,0 +1,8 @@
+:root{
+  /* Motion is a state change, not a performance. No bounce, no scale, no spring. */
+  --duration-fast:120ms /* @kind other */;
+  --duration:180ms /* @kind other */;
+  --duration-slow:320ms /* @kind other */;
+  --ease:cubic-bezier(0.2,0,0.3,1); /* @kind other */
+  --transition-color:color var(--duration-fast) var(--ease),background-color var(--duration-fast) var(--ease),border-color var(--duration-fast) var(--ease); /* @kind other */
+}

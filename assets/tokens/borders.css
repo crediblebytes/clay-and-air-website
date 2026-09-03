@@ -1,0 +1,11 @@
+:root{
+  /* 2px maximum, everywhere. Not zero, never 8px+. */
+  --radius:2px;
+  --radius-sm:2px;
+  --radius-max:2px;
+  --hairline:1px; /* @kind spacing */
+  --border-hairline-width:1px;
+  --rule-accent-width:2px;
+  /* There is no shadow system. Flat color only. */
+  --shadow-none:none;
+}

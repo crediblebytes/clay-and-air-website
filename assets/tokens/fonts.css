@@ -1,0 +1,11 @@
+/* Clay & Air webfonts — Newsreader, IBM Plex Sans, IBM Plex Mono.
+   All three are free on Google Fonts and are loaded from the Google Fonts CSS API.
+   No font binaries ship with this system; see readme.md > Fonts. */
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+:root{
+  --font-display:"Newsreader",Georgia,"Times New Roman",serif;
+  --font-body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"IBM Plex Mono","SFMono-Regular",Menlo,monospace;
+  --font-serif-display:var(--font-display);
+}
