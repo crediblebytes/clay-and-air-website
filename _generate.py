@@ -1311,9 +1311,12 @@ def technique_page(t):
     if siblings:
         sib_rows = "\n".join(
             f"""        <li><a href="{s['slug']}.html">
-          <span class="name">{s['name']}</span>
-          <span class="aside"><span class="state-meta">{meta_html(s['meta'][:2])}</span></span>
-          <span class="use">{s['short_use']}</span>
+          <span class="dur">{s['meta'][0]}</span>
+          <span class="body">
+            <span class="name">{s['name']}</span>
+            <span class="use">{s['short_use']}</span>
+          </span>
+          <span class="aside"><span class="state-meta">{s['meta'][1]}</span></span>
         </a></li>"""
             for s in siblings
         )
@@ -1541,9 +1544,11 @@ def pillar_page(pillar):
     )
     rows += "\n" + "\n".join(
         f"""        <li><div class="pending">
-          <span class="name">{p['name']}</span>
+          <span class="dur">{p['meta']}</span>
+          <span class="body">
+            <span class="name">{p['name']}</span>
+          </span>
           <span class="aside"><span class="state-meta">Not written</span></span>
-          <span class="use">{p['meta']}</span>
         </div></li>"""
         for p in pend
     )

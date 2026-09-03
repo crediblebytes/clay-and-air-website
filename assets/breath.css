@@ -324,8 +324,8 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 .tech-list a,
 .tech-list .pending {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-4) var(--space-7);
+  grid-template-columns: 210px minmax(0, 1fr) auto;
+  gap: var(--space-4) var(--space-6);
   align-items: baseline;
   padding: var(--space-5) 0;
   text-decoration: none;
@@ -333,11 +333,27 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   transition: var(--transition-color);
 }
 .tech-list a:hover { background: var(--surface-well); color: var(--text-body); }
-.tech-list .name { font: var(--weight-display) var(--size-h3) / var(--lh-h3) var(--font-display); }
-.tech-list .use { font-size: var(--size-small); color: var(--text-secondary); grid-column: 1; max-width: var(--measure-prose); }
-.tech-list .aside { grid-row: 1; grid-column: 2; text-align: right; }
+.tech-list .dur {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-body);
+}
+.tech-list .body { display: block; min-width: 0; }
+.tech-list .name {
+  display: block;
+  font: var(--weight-display) var(--size-h3) / var(--lh-h3) var(--font-display);
+}
+.tech-list .use {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--size-small);
+  color: var(--text-secondary);
+  max-width: var(--measure-prose);
+}
+.tech-list .aside { text-align: right; white-space: nowrap; }
 .tech-list .pending { color: var(--text-tertiary); }
-.tech-list .pending .name { color: var(--text-tertiary); }
+.tech-list .pending .name, .tech-list .pending .dur { color: var(--text-tertiary); }
 
 .state-meta {
   font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
@@ -389,11 +405,16 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 
 @media (max-width: 900px) {
   :root { --gutter: var(--gutter-mobile); --section-gap: var(--section-gap-mobile); }
-  .technique h1 { font-size: 34px; }
+  .technique h1, .lede { font-size: 34px; }
   .library, .cards { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr; gap: var(--space-7); }
-  .tech-list a, .tech-list .pending { grid-template-columns: 1fr; }
-  .tech-list .aside { grid-row: auto; grid-column: 1; text-align: left; }
+  .tech-list a, .tech-list .pending {
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2) var(--space-4);
+  }
+  .tech-list .body { order: -1; grid-column: 1 / -1; }
+  .tech-list .dur { grid-column: 1; }
+  .tech-list .aside { grid-column: 2; }
   .steps li { grid-template-columns: 36px 1fr; gap: var(--space-3); }
   .technique { padding-top: var(--space-7); }
 }
@@ -435,20 +456,3 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 
 /* duration as the left column, per DESIGN.md > Iconography rule 1:
    type first, "8 MIN" over a clock. */
-.tech-list a { grid-template-columns: 130px 1fr auto; }
-.tech-list .dur {
-  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-body);
-}
-.tech-list .body { display: block; }
-.tech-list .body .name { display: block; }
-.tech-list .body .use { display: block; margin-top: 4px; }
-.tech-list .aside { grid-row: auto; grid-column: auto; }
-
-@media (max-width: 900px) {
-  .tech-list a { grid-template-columns: 1fr; gap: var(--space-2); }
-  .tech-list .aside { text-align: left; }
-  .lede { font-size: 34px; }
-}
