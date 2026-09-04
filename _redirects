@@ -1,4 +1,5 @@
-# Source lives in git, not on the web.
+# Source is in git, not on the web. The ! forces the rule to win
+# over the real file that is sitting there.
 
-/_dev/*  /  404
-/README.md  /  404
+/_dev/*  /404.html  404!
+/README.md  /404.html  404!

@@ -1,7 +1,7 @@
 import re, sys, importlib.util, collections, glob, html
 import os, pathlib
 os.chdir(pathlib.Path(__file__).resolve().parent.parent)  # repo root
-spec = importlib.util.spec_from_file_location("g", "_dev/_generate.py")
+spec = importlib.util.spec_from_file_location("g", "_dev/generate.py")
 g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
 
 issues = collections.defaultdict(list)

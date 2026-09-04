@@ -119,14 +119,14 @@ keeping the relaxing recordings dry is what makes that contrast mean something.
 ## Putting one on the site
 
 Upload to YouTube, unlisted or public, then add one line to `MEDITATIONS` in
-`_generate.py`:
+`_dev/generate.py`:
 
     MEDITATIONS = {
         "cleansing-breath": ("bKAwu9Yr-Gk", "ben"),
         "turtle-breath": ("YOUR_VIDEO_ID", "clay"),
     }
 
-`"clay"` captions it as yours, `"ben"` as his. Then run `python3 _generate.py`
+`"clay"` captions it as yours, `"ben"` as his. Then run `python3 _dev/generate.py`
 and the second player appears under the technique video on that page. Nothing
 else needs touching.
 

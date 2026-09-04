@@ -8,7 +8,7 @@ activating techniques slot in by adding a dict to TECHNIQUES.
 To add a technique:
   1. Add an entry to TECHNIQUES with pillar="activating".
   2. Add a row to STATES if it has a state someone would arrive in.
-  3. Run: python3 _generate.py
+  3. Run: python3 _dev/generate.py
 
 Fields that may be omitted:
   cadence  — omit where no real protocol exists. Never invent one.
@@ -22,7 +22,7 @@ import os
 import re
 import time
 
-# The generator lives in _dev/ and writes the site to the repo root, so
+# generate.py lives in _dev/ and writes the site to the repo root, so
 # nothing but the site itself is ever inside the published directory.
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -2232,14 +2232,40 @@ def pillar_page(pillar):
 {footer(1)}"""
 
 
+def not_found_page():
+    """Netlify serves 404.html for any unmatched route automatically."""
+    return f"""{head('Not found - Clay & Air',
+                     'That page does not exist.', 0, '404.html').replace(
+        '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">',
+        '<meta name="robots" content="noindex, follow">')}
+{header(0)}
+
+<main>
+  <section class="technique">
+    <div class="wrap">
+      <p class="label">404</p>
+      <h1>That page is not here.</h1>
+      <p class="purpose">It may have moved, or the link may be wrong. The
+      library is the best place to start again.</p>
+      <p class="label--gap">
+        <a class="btn btn--secondary" href="index.html">Breath library</a>
+      </p>
+    </div>
+  </section>
+</main>
+{footer(0)}"""
+
+
 def redirects_txt():
-    """Netlify publishes the repo root, so anything committed is fetchable.
-    The source lives in _dev/ and belongs in git, but not on the web: one
-    file carries every technique, all the copy and the editorial notes in
-    machine readable form."""
+    """Netlify uploads everything in the publish directory, so these rules do
+    not stop _dev/ being deployed, they stop it being served. The trailing !
+    is required: without it Netlify serves an existing file and never reaches
+    the rule. The only way to keep a file off the CDN entirely is to keep it
+    out of the publish directory."""
     hidden = ["/_dev/*", "/README.md"]
-    lines = ["# Source lives in git, not on the web.", ""]
-    lines += [f"{p}  /  404" for p in hidden]
+    lines = ["# Source is in git, not on the web. The ! forces the rule to win",
+             "# over the real file that is sitting there.", ""]
+    lines += [f"{p}  /404.html  404!" for p in hidden]
     lines.append("")
     return "\n".join(lines)
 
@@ -2348,4 +2374,5 @@ if __name__ == "__main__":
     write("robots.txt", robots_txt())
     write("sitemap.xml", sitemap_xml(paths))
     write("llms.txt", llms_txt())
+    write("404.html", not_found_page())
     write("_redirects", redirects_txt())

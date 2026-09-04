@@ -1,10 +1,10 @@
 # Clay & Air breath technique library
 
 Static HTML. No runtime dependency, no framework, no build step in production.
-`_dev/_generate.py` is a local dev tool that writes the `.html` files, and the
+`_dev/generate.py` is a local dev tool that writes the `.html` files, and the
 `.html` files are what ship.
 
-    python3 _dev/_generate.py
+    python3 _dev/generate.py
 
 Everything that is not the site lives in `_dev/`. Netlify publishes the repo
 root, so `_redirects` 404s that folder: the source is in git, not on the web.
@@ -20,7 +20,7 @@ root, so `_redirects` 404s that folder: the source is in git, not on the web.
     freedom/sonic-neural.html
     assets/breath.css       tokens and components
     assets/mark-*.svg       simplified cut of MARK-01, used below 180px
-    _dev/_generate.py       page generator, and all the content
+    _dev/generate.py       page generator, and all the content
     _dev/qa.py, qa2.py      the checks
     _redirects              keeps _dev off the web
 
@@ -50,10 +50,10 @@ the pattern, how it lands, what it does, the rest of the pillar.
 
 ## Adding a technique
 
-1. Add a dict to `TECHNIQUES` in `_dev/_generate.py`.
+1. Add a dict to `TECHNIQUES` in `_dev/generate.py`.
 2. Add its feelings to `TAGS`.
 3. Add `FEELS` and `BENEFITS` entries.
-4. `python3 _generate.py`
+4. `python3 _dev/generate.py`
 
 ### Fields
 
