@@ -19,6 +19,11 @@
 @import url("tokens/motion.css");
 @import url("tokens/base.css");
 
+/* DESIGN.md > Components: focus-visible is a 1px soot outline at 2px offset.
+   On soot sections the same rule inverts so the ring stays visible. */
+:focus-visible { outline: var(--hairline) solid var(--soot); outline-offset: 2px; }
+.ca-invert :focus-visible { outline-color: var(--bone); }
+
 /* ---------- shared type helpers ---------- */
 
 .label {
@@ -28,6 +33,7 @@
   color: var(--text-secondary);
   margin: 0 0 var(--eyebrow-gap);
   display: block;
+  max-width: none;
 }
 .label--tertiary { color: var(--text-tertiary); }
 .body-lg { font-size: var(--size-body-lg); line-height: var(--lh-body-lg); }
@@ -38,6 +44,23 @@ p { margin: 0 0 var(--space-4); }
 p:last-child { margin-bottom: 0; }
 
 .dot { opacity: 0.5; }
+
+/* A reading column. The measure lives on the container, so every paragraph
+   inside shares one right edge. Put it on each element instead and 68ch
+   resolves against that element's own font size, so a 19px lead and a 17px
+   paragraph end at different places. */
+.copy { max-width: var(--measure-prose); }
+.copy > * { max-width: none; }
+.lead {
+  font-size: var(--size-body-lg);
+  line-height: var(--lh-body-lg);
+  color: var(--text-secondary);
+  margin: var(--space-4) 0 var(--space-4);
+}
+.cards--spaced { margin-top: var(--space-5); }
+.tech-list--spaced { margin-top: var(--space-7); }
+.label--gap { margin-top: var(--space-7); }
+.section--pad { padding-top: var(--space-8); }
 
 /* ---------- layout ---------- */
 
@@ -88,6 +111,10 @@ p:last-child { margin-bottom: 0; }
   white-space: nowrap;
 }
 .site-nav a:hover { color: var(--soot); }
+/* WCAG 2.2 target size. A pseudo-element grows the hit area to 44px without
+   moving the label or the active underline. */
+.site-nav a { position: relative; }
+.site-nav a::after { content: ""; position: absolute; inset: -14px 0; }
 .site-nav a[aria-current="page"] {
   color: var(--soot);
   border-bottom-color: var(--border-accent);
@@ -124,7 +151,7 @@ p:last-child { margin-bottom: 0; }
 .library-empty { margin: var(--space-8) 0 0; color: var(--text-secondary); }
 
 /* non-interactive tags on a technique page */
-.tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-8); max-width: var(--measure-prose); }
+.tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-8); max-width: none; }
 .tag {
   font: var(--weight-medium) var(--size-label) / 1 var(--font-mono);
   letter-spacing: var(--tracking-label);
@@ -176,18 +203,6 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   padding-top: var(--space-4);
   border-top: var(--hairline) solid var(--border-hairline);
 }
-.tech-card .start-here { margin: 0 0 var(--space-3); }
-
-/* ---------- start-here / signature marker ---------- */
-
-.start-here {
-  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-accent);
-  display: block;
-  margin: -4px 0 14px;
-}
 
 /* ---------- technique page ---------- */
 
@@ -198,11 +213,14 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   letter-spacing: var(--tracking-tight);
   margin: 0 0 var(--space-4);
 }
+/* A page's opening paragraph runs the full content width, as on Sessions.
+   tokens/base.css caps every p at the prose measure, so this has to say
+   none explicitly. Body copy further down the page keeps the cap. */
 .technique .purpose {
   font-size: var(--size-body-lg);
   line-height: var(--lh-body-lg);
   color: var(--text-secondary);
-  max-width: var(--measure-prose);
+  max-width: none;
   margin: 0 0 var(--space-5);
 }
 
@@ -216,7 +234,7 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   border-top: var(--hairline) solid var(--border-hairline);
   border-bottom: var(--hairline) solid var(--border-hairline);
   margin: var(--space-5) 0 var(--space-6);
-  max-width: 720px;
+  max-width: none;
 }
 .meta-items {
   font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
@@ -233,7 +251,7 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   border-radius: var(--radius);
   padding: var(--card-padding);
   margin: 0 0 var(--space-8);
-  max-width: 720px;
+  max-width: var(--measure-prose);
 }
 .before ul { list-style: none; margin: 0; padding: 0; }
 .before li { padding: var(--space-3) 0; border-bottom: var(--hairline) solid var(--border-hairline); }
@@ -247,7 +265,7 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   border-radius: var(--radius);
   padding: var(--card-padding);
   margin: 0 0 var(--space-8);
-  max-width: 720px;
+  max-width: var(--measure-prose);
 }
 .basics-intro { font-size: var(--size-body); line-height: var(--lh-body); margin: 0 0 var(--space-2); }
 .basics-list { margin-top: var(--space-5); }
@@ -291,7 +309,7 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 .benefits li:first-child { border-top: var(--hairline) solid var(--border-hairline); }
 
 /* video */
-.video { margin: 0 0 var(--space-9); max-width: 640px; }
+.video { margin: 0 0 var(--space-9); max-width: var(--measure-prose); }
 .video-plate {
   background: var(--surface-well);
   border: var(--hairline) solid var(--border-hairline);
@@ -314,7 +332,7 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   border-bottom: var(--hairline) solid var(--border-hairline);
   padding: var(--space-4) 0;
   margin: 0 0 var(--space-7);
-  max-width: 640px;
+  max-width: var(--measure-prose);
 }
 
 /* ---------- pillar and sibling lists ---------- */
@@ -366,14 +384,21 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 /* ---------- footer (Chrome.jsx) ---------- */
 
 .site-footer { padding: var(--space-10) 0 var(--space-8); }
-.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-9); }
+/* the lockup column stays at its 475px minimum; the link columns divide what
+   is left, so adding a fourth never squeezes the mark below legibility */
+.footer-top {
+  display: grid;
+  grid-template-columns: minmax(475px, 2fr) repeat(3, 1fr);
+  gap: var(--space-8);
+}
 /* full lockup at its minimum legible width: 475px puts BREATHWORK's cap
    height at the 6.5px floor. The column is 476px. */
 .footer-lockup { width: 100%; max-width: 475px; height: auto; display: block; margin-bottom: var(--space-4); }
 .site-footer .lockup-line { margin-top: var(--space-2); }
 .site-footer .bio { margin-top: var(--space-4); color: var(--text-secondary); font-size: var(--size-small); max-width: 34ch; }
 .footer-col ul { list-style: none; padding: 0; margin: var(--space-4) 0 0; display: flex; flex-direction: column; gap: var(--space-3); }
-.footer-col a { color: var(--bone); font-size: var(--size-small); text-decoration: none; }
+.footer-col a { color: var(--bone); font-size: var(--size-small); text-decoration: none; position: relative; }
+.footer-col a::after { content: ""; position: absolute; inset: -4px 0; }
 .footer-col a:hover { color: var(--ochre); }
 .footer-bottom {
   margin-top: var(--space-9);
@@ -443,7 +468,6 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 .lede {
   font: var(--weight-display) var(--size-h1) / var(--lh-h1) var(--font-display);
   letter-spacing: var(--tracking-tight);
-  max-width: 22ch;
   margin: 0;
 }
 .lede-sub {
@@ -451,8 +475,237 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   color: var(--text-secondary);
   font-size: var(--size-body-lg);
   line-height: var(--lh-body-lg);
-  max-width: var(--measure-prose);
+  max-width: none;
 }
 
 /* duration as the left column, per DESIGN.md > Iconography rule 1:
    type first, "8 MIN" over a clock. */
+
+/* ---------- buttons, fields, checkbox ----------
+   Ported from the design system's core/Button, forms/Field and
+   forms/Checkbox. Same tokens, same geometry, no new decisions. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font: var(--weight-medium) 14px / 1 var(--font-body);
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  border-radius: var(--radius);
+  border: var(--hairline) solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--transition-color);
+}
+.btn--primary { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
+.btn--primary:hover { background: var(--btn-primary-bg-hover); color: var(--btn-primary-fg); }
+.btn--secondary {
+  background: transparent;
+  color: var(--btn-secondary-fg);
+  border-color: var(--btn-secondary-border);
+}
+.btn--secondary:hover { background: var(--btn-secondary-bg-hover); color: var(--btn-secondary-fg); }
+.btn--full { width: 100%; }
+
+.field { display: flex; flex-direction: column; gap: var(--space-2); }
+.field > label {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  background: var(--field-bg);
+  color: var(--text-body);
+  border: var(--hairline) solid var(--field-border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font: var(--weight-regular) var(--size-body) / 1.4 var(--font-body);
+  outline: none;
+  box-shadow: none;
+  transition: var(--transition-color);
+}
+.field textarea { resize: vertical; min-height: 108px; }
+.field input:focus,
+.field select:focus,
+.field textarea:focus { border-color: var(--field-border-focus); }
+.field input::placeholder,
+.field textarea::placeholder { color: var(--text-tertiary); }
+.field .hint { font-size: var(--size-small); color: var(--text-tertiary); }
+
+.check { display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer; }
+.check input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  background: var(--field-bg);
+  border: var(--hairline) solid var(--field-border);
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: var(--transition-color);
+}
+.check input:checked { background: var(--soot); border-color: var(--soot); }
+.check input:checked::after { content: ""; width: 8px; height: 8px; background: var(--bone); }
+.check input:focus-visible { outline: var(--hairline) solid var(--soot); outline-offset: 2px; }
+.check .check-body { font-size: var(--size-body); line-height: 1.4; }
+.check .hint { display: block; font-size: var(--size-small); color: var(--text-tertiary); margin-top: 2px; }
+
+/* the intake layout: facts on the left, the form in a paper card on the right */
+/* the opening runs the full content width, out to the right edge of the form,
+   so the prose measure cap is lifted here too */
+.intake-open { margin-bottom: var(--space-9); }
+.intake-open .purpose,
+.intake-open .why { max-width: none; }
+.intake { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-9); align-items: start; }
+.intake-facts { border-top: var(--hairline) solid var(--border-hairline); }
+.intake-facts > div { padding: var(--space-7) 0; border-bottom: var(--hairline) solid var(--border-hairline); }
+/* an offer is a section of its own: mono eyebrow over a serif heading, per
+   DESIGN.md's core pairing rule, not a run of mono metadata. */
+.intake-facts h2 {
+  font: var(--weight-display) var(--size-h2) / var(--lh-h2) var(--font-display);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--space-4);
+}
+.intake-facts p {
+  margin: 0 0 var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--size-body);
+  max-width: var(--measure-prose);
+}
+.intake-facts p:last-child { margin-bottom: 0; }
+.why { color: var(--text-secondary); max-width: var(--measure-prose); }
+.why + .why { margin-top: var(--space-4); }
+.intake-form { display: flex; flex-direction: column; gap: var(--space-5); }
+.form-card {
+  background: var(--surface-raised);
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  padding: var(--space-7);
+}
+.why { color: var(--text-secondary); max-width: var(--measure-prose); }
+.pot { position: absolute; left: -9999px; }
+
+/* the quiet close on a technique page. Not a sticky bar, not a banner. */
+.next-step { border-top: var(--hairline) solid var(--border-hairline); padding-top: var(--space-6); }
+.next-step p { color: var(--text-secondary); max-width: var(--measure-prose); margin: var(--space-3) 0 var(--space-5); }
+
+@media (max-width: 900px) {
+  .intake { grid-template-columns: 1fr; gap: var(--space-7); }
+  .intake-open { margin-bottom: var(--space-7); }
+  .form-card { padding: var(--space-6); }
+}
+
+/* ---------- flashcard faces ----------
+   DESIGN.md > Motion bans transform, so this is a turn rather than a flip.
+   The card is three rows: a head and a foot that never move, and a body that
+   swaps. Only the middle changes, so the name stays put, the footer rule
+   stays put, and the control never chases the text down the card. */
+
+.tech-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+.tech-card .card-head h3 { margin: 0; }
+.badge {
+  flex: 0 0 auto;
+  font: var(--weight-medium) var(--size-label) / 1 var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  border: var(--hairline) solid transparent;
+  white-space: nowrap;
+}
+/* filled outranks outlined, so the entry point reads first */
+.badge--start { background: var(--soot); color: var(--bone); }
+.badge--signature { color: var(--text-accent); border-color: var(--border-accent); }
+.tech-card .card-body {
+  display: grid;
+  grid-template-rows: 1fr auto;      /* faces, then the badge line */
+  min-height: 400px;                 /* the tallest face, so the card never resizes */
+  padding: var(--space-5) 0;
+}
+.tech-card .face { grid-area: 1 / 1; }
+/* the badge sits outside both faces, so a turn never takes it away */
+.card-badge { grid-row: 2; justify-self: end; margin: var(--space-5) 0 0; }
+.tech-card .face[data-off] { display: none; }
+
+/* the whole card is the link target, as it was before */
+.card-link { color: inherit; text-decoration: none; }
+.card-link::after { content: ""; position: absolute; inset: 0; }
+a.card-link:hover { color: var(--text-body); }
+.tech-card:hover { border-color: var(--border-strong); }
+
+.tech-card .use { margin: 0 0 var(--space-4); }
+.lands {
+  font-size: var(--size-small);
+  line-height: var(--lh-small);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-5);
+}
+.for { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; }
+.for span {
+  font: var(--weight-medium) var(--size-label) / 1 var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+
+.flash {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--size-small);
+  line-height: var(--lh-small);
+  color: var(--text-body);
+}
+.flash li {
+  padding: var(--space-2) 0;
+  border-top: var(--hairline) solid var(--border-hairline);
+}
+.flash li:first-child { border-top: 0; padding-top: 0; }
+
+.card-foot {
+  display: flex;
+  white-space: nowrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--hairline) solid var(--border-hairline);
+}
+
+/* right aligned, so its edge is fixed whatever the label says */
+.turn {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-link);
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  transition: var(--transition-color);
+}
+.turn:hover { color: var(--text-link-hover); }
+.turn::after { content: ""; position: absolute; inset: -12px 0 -12px -12px; }
+.turn:focus-visible { outline: var(--hairline) solid var(--soot); outline-offset: 2px; }

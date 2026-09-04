@@ -16,10 +16,27 @@ Fields that may be omitted:
   note     — omit where the source has no note.
 """
 
+import html
+import json
 import os
 import re
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+# Search and answer-engine descriptions, one per pillar. Written to answer the
+# question someone actually typed, not to restate the pillar name.
+PILLAR_DESC = {
+    "relaxing": ("Eight breathing techniques that bring the nervous system "
+                 "down: for anxiety, sleep, and staying steady under "
+                 "pressure. Safe to run on your own."),
+    "activating": ("Ten breathing techniques that wake the body up: for "
+                   "mornings, before training, and shifting a flat day. "
+                   "Come back sharper for it."),
+    "freedom": ("Sonic Neural Breathwork, a facilitated ceremony rather than "
+                "a technique you fit into a lunch break. What it is, what it "
+                "does, and how to prepare for one."),
+}
 
 PILLARS = {
     "relaxing": ("Pillar one · Relaxing", "relaxing"),
@@ -788,7 +805,7 @@ MEDITATIONS = {
 
 MEDITATION_CAPTION = {
     "ben": "Ben Holt's guided version. Follow along with it.",
-    "clay": "Our guided version. Follow along with it.",
+    "clay": "A Clay & Air recording. Follow along with it.",
 }
 
 FEELS = {
@@ -1062,8 +1079,89 @@ def meta_html(parts):
     return ' <span class="dot">&middot;</span> '.join(parts)
 
 
-def head(title, desc, depth):
+# Analytics. Plausible sets no cookies, so there is no consent banner to
+# design, and it takes custom events, which is the point: the pill somebody
+# taps at 2am is the most useful number this site can produce. Set
+# ANALYTICS_ON to False and no script is emitted anywhere.
+ANALYTICS_ON = True
+
+PLAUSIBLE = """
+  <!-- Privacy-friendly analytics by Plausible -->
+  <script async src="https://plausible.io/js/pa-VSqWa9Bp7sjkwzZ91EFkO.js"></script>
+  <script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+  </script>"""
+
+
+def analytics():
+    return PLAUSIBLE if ANALYTICS_ON else ""
+
+
+# Social profiles. Each one feeds two places: the footer column and the
+# Organization schema's sameAs, which is how a search or answer engine ties
+# the site and the accounts into one entity. Add a line and both update.
+SOCIALS = [
+    ("Instagram", "https://www.instagram.com/clayandairnow/"),
+    ("YouTube", "https://www.youtube.com/@clayandairnow"),
+    ("TikTok", "https://www.tiktok.com/@clayandairnow"),
+]
+
+
+SITE_URL = "https://clayandair.com"
+SITE_NAME = "Clay & Air"
+SITE_TAGLINE = "Breathwork for men who hold it together."
+
+
+def canonical(path):
+    """Clean URLs. Netlify serves /x and /x.html with a 200 either way, so
+    without a canonical every page exists at two addresses and the ranking
+    signal splits between them."""
+    p = path.replace("index.html", "").replace(".html", "")
+    return f"{SITE_URL}/{p}".rstrip("/") if p else SITE_URL
+
+
+def jsonld(obj):
+    return ('\n  <script type="application/ld+json">'
+            + json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
+            + "</script>")
+
+
+def org_schema():
+    return {
+        "@type": "Organization",
+        "@id": f"{SITE_URL}/#org",
+        "name": SITE_NAME,
+        "url": SITE_URL,
+        "description": SITE_TAGLINE,
+        "logo": f"{SITE_URL}/assets/share.png",
+        "founder": {"@type": "Person", "name": "Don Page"},
+        "sameAs": [u for _, u in SOCIALS],
+    }
+
+
+def crumbs(trail):
+    """trail is [(name, path), ...] ending at the current page."""
+    return {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": i + 1, "name": n,
+             "item": canonical(p)}
+            for i, (n, p) in enumerate(trail)
+        ],
+    }
+
+
+def head(title, desc, depth, path, schema=None):
     up = "../" * depth
+    url = canonical(path)
+    graph = [org_schema(), {
+        "@type": "WebSite", "@id": f"{SITE_URL}/#site",
+        "url": SITE_URL, "name": SITE_NAME,
+        "publisher": {"@id": f"{SITE_URL}/#org"},
+    }]
+    graph += schema or []
+    ld = jsonld({"@context": "https://schema.org", "@graph": graph})
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1071,11 +1169,28 @@ def head(title, desc, depth):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content="{desc}">
+  <link rel="canonical" href="{url}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="theme-color" content="#EDE7DC">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{SITE_NAME}">
+  <meta property="og:title" content="{title}">
+  <meta property="og:description" content="{desc}">
+  <meta property="og:url" content="{url}">
+  <meta property="og:image" content="{SITE_URL}/assets/share.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Clay &amp; Air, breathwork for men who hold it together">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{title}">
+  <meta name="twitter:description" content="{desc}">
+  <meta name="twitter:image" content="{SITE_URL}/assets/share.png">
   <link rel="icon" href="{up}assets/favicon.ico" sizes="any">
   <link rel="icon" href="{up}assets/favicon-32.png" type="image/png">
   <link rel="icon" href="{up}assets/mark-01-micro.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{up}assets/favicon-32.png">
   {FONTS}
-  <link rel="stylesheet" href="{up}assets/breath.css">
+  <link rel="stylesheet" href="{up}assets/breath.css">{analytics()}{ld}
 </head>
 <body>"""
 
@@ -1097,6 +1212,7 @@ def header(depth, current=None):
       {nav('relaxing/index.html', 'Relaxing', 'relaxing')}
       {nav('activating/index.html', 'Activating', 'activating')}
       {nav('freedom/index.html', 'Freedom', 'freedom')}
+      {nav('sessions.html', 'Sessions', 'sessions')}
     </nav>
   </div>
 </header>"""
@@ -1105,6 +1221,18 @@ def header(depth, current=None):
 def footer(depth):
     """Follows ui_kits/website/Chrome.jsx > Footer."""
     up = "../" * depth
+    social_col = ""
+    if SOCIALS:
+        rows = "\n".join(
+            f'          <li><a href="{u}" rel="me noopener">{n}</a></li>'
+            for n, u in SOCIALS)
+        social_col = f"""
+      <div class="footer-col">
+        <p class="label label--tertiary">Follow</p>
+        <ul>
+{rows}
+        </ul>
+      </div>"""
     return f"""
 <footer class="site-footer ca-invert">
   <div class="wrap">
@@ -1130,7 +1258,7 @@ def footer(depth):
           <li><a href="https://www.awakenedbreath.org/" rel="noopener">Ben Holt</a></li>
           <li><a href="https://www.awakenedbreath.org/" rel="noopener">Awakened Breath</a></li>
         </ul>
-      </div>
+      </div>{social_col}
     </div>
     <div class="footer-bottom">
       <p class="disclaimer">Techniques taught by Ben Holt. If you have a heart or
@@ -1187,8 +1315,68 @@ def video_block(t, depth):
       <p class="video-pending">Video: {label} <span class="dot">&middot;</span> to come</p>"""
 
 
+def iso_duration(text):
+    """Best effort ISO 8601 duration from the meta line, for HowTo totalTime.
+    Returns None when the line is reps rather than minutes."""
+    m = re.search(r"(\d+)(?:\s*-\s*(\d+))?\+?\s*minutes?", text, re.I)
+    if m:
+        return f"PT{m.group(2) or m.group(1)}M"
+    m = re.search(r"(\d+(?:\.\d+)?)\s*hours?", text, re.I)
+    if m:
+        return f"PT{int(float(m.group(1)) * 60)}M"
+    m = re.search(r"(\d+)\s*seconds?", text, re.I)
+    if m:
+        return f"PT{m.group(1)}S"
+    return None
+
+
+def technique_schema(t):
+    """A breath technique is a procedure with ordered steps, so HowTo is the
+    honest match. It is also what makes the steps eligible to be quoted back
+    by an assistant that is asked how to do one of these."""
+    path = f"{t['pillar']}/{t['slug']}.html"
+    url = canonical(path)
+    steps = [re.sub("<[^>]+>", "", s).strip() for s in t["steps"]]
+    how = {
+        "@type": "HowTo",
+        "@id": f"{url}#howto",
+        "name": re.sub("<[^>]+>", "", t.get("plain_name", t["name"])),
+        "description": re.sub("<[^>]+>", "", t["purpose"]),
+        "url": url,
+        "inLanguage": "en",
+        "isPartOf": {"@id": f"{SITE_URL}/#site"},
+        "publisher": {"@id": f"{SITE_URL}/#org"},
+        "step": [
+            {"@type": "HowToStep", "position": i + 1, "name": s.split(".")[0][:60],
+             "text": s, "url": f"{url}#step{i + 1}"}
+            for i, s in enumerate(steps)
+        ],
+    }
+    dur = iso_duration(t["meta"][0])
+    if dur:
+        how["totalTime"] = dur
+    out = [how]
+    vids = t.get("videos") or ([("Watch", "", t["video_id"])] if t.get("video_id") else [])
+    for label, caption, vid in vids:
+        out.append({
+            "@type": "VideoObject",
+            "name": f"{re.sub('<[^>]+>', '', t['name'])} - {label}",
+            "description": re.sub("<[^>]+>", "", caption or t["purpose"]),
+            "thumbnailUrl": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
+            "embedUrl": f"https://www.youtube.com/embed/{vid}",
+            "uploadDate": "2026-01-01",
+            "publisher": {"@id": f"{SITE_URL}/#org"},
+        })
+    label = PILLARS[t["pillar"]][0].split(chr(183))[1].strip()
+    out.append(crumbs([("Breath library", "index.html"),
+                       (label, f"{t['pillar']}/index.html"),
+                       (re.sub("<[^>]+>", "", t["name"]), path)]))
+    return out
+
+
 def technique_page(t):
     depth = 1
+    up = "../" * depth
     pillar_label, pillar_dir = PILLARS[t["pillar"]]
     plain = re.sub("<[^>]+>", "", t.get("plain_name", t["name"]))
 
@@ -1307,6 +1495,27 @@ def technique_page(t):
     siblings = [x for x in TECHNIQUES
                 if x["pillar"] == t["pillar"] and x["slug"] != t["slug"]
                 and not x.get("placeholder")]
+    # the quiet close. Someone who read to the bottom of a technique is the
+    # only person on the site who has shown you anything. One line, no banner.
+    if t["slug"] == "sonic-neural":
+        next_step = f"""
+      <div class="next-step">
+        <p class="label">Sitting one of these</p>
+        <p>This one is not a solo practice. It runs at the long workshop and
+        on retreat, with people holding the room. Say the word and you will
+        hear when the next one is on.</p>
+        <a class="btn btn--primary"
+          href="{up}sessions.html?about=retreat">Tell me when the next one is</a>
+      </div>"""
+    else:
+        next_step = f"""
+      <div class="next-step">
+        <p class="label">If you want a hand with it</p>
+        <p>This one works on your own. Some of it lands harder with someone
+        in the room, and that is what the workshops are for.</p>
+        <a class="btn btn--secondary" href="{up}sessions.html">Sessions</a>
+      </div>"""
+
     sib_block = ""
     if siblings:
         sib_rows = "\n".join(
@@ -1332,7 +1541,25 @@ def technique_page(t):
       </div>
     </section>"""
 
-    return f"""{head(f'{plain} - Clay & Air', re.sub('<[^>]+>', '', t['purpose'])[:150], depth)}
+    # search snippets are cut around 155 characters, so budget for the meta
+    # tail and trim the purpose on a word boundary to fit
+    tail = f" {t['meta'][0]}, {t['meta'][1].lower()}."
+    desc = re.sub('<[^>]+>', '', t['purpose'])
+    room = 155 - len(tail)
+    if len(desc) > room:
+        cut = desc[:room]
+        # prefer the last complete sentence, so the snippet never ends on a
+        # fragment; fall back to a word boundary only if there is no sentence
+        end = cut.rfind('. ')
+        desc = (cut[:end + 1] if end > 40
+                else cut.rsplit(' ', 1)[0].rstrip('.,;:') + '.')
+    desc += tail
+    tpath = f"{t['pillar']}/{t['slug']}.html"
+    use = re.sub('<[^>]+>', '', t['short_use']).rstrip('.')
+    title = f'{plain}: {use[0].lower() + use[1:]} - Clay & Air'
+    if len(title) > 62:
+        title = f'{plain} - Clay & Air'
+    return f"""{head(title, desc, depth, tpath, technique_schema(t))}
 {header(depth, t['pillar'])}
 
 <main>
@@ -1350,6 +1577,7 @@ def technique_page(t):
 {steps}
         </ol>
       </div>{note}{progression}{feels}{benefits}
+{next_step}
     </div>
 {sib_block}
   </article>
@@ -1357,28 +1585,148 @@ def technique_page(t):
 {footer(depth)}"""
 
 
+# ---------------------------------------------------------------------------
+# Flashcard backs. The line for each step is its first sentence, which turns
+# out to be the instruction with the explanation stripped off. Where that
+# reads badly, or the technique carries more steps than a card face can hold,
+# an override goes here and wins.
+# ---------------------------------------------------------------------------
+
+FLASH = {
+    "foundational-breath": [
+        "In through the nose: belly, chest, then up behind the eyes",
+        "Hold 5 to 10 seconds at the top",
+        "Open your mouth and sigh it all the way out",
+        "Ujjayi exhale instead anywhere you cannot make noise",
+        "Repeat",
+    ],
+    "cleansing-breath": [
+        "Sitting or lying down",
+        "In through the nose, a golden light coming in with the air",
+        "Hold it at the top",
+        "Ujjayi exhale, the tension leaving as dark purple smoke",
+        "The heavy part settles in a cauldron low in the belly",
+        "Breathe the light down into the cauldron and wash it clean",
+    ],
+    "heart-opening-breath": [
+        "Sit or stand with your arms out wide",
+        "In through the nose, arms drawing in toward the chest",
+        "A green light coming into the heart space as they close",
+        "Open the arms and breathe out on a long, audible ah",
+        "Shake it out if something comes up",
+        "Ten to twenty minutes",
+    ],
+    "qi-gong-breathing": [
+        "Stand with your feet planted and your knees soft",
+        "In through the nose: belly, chest, head",
+        "A warm gold light coming in with the air",
+        "Ujjayi exhale, following it down to the tips of your toes",
+        "Breathe in and bring it back to the top of your head",
+        "Keep it circulating",
+    ],
+    "twisting-breath": [
+        "Arms out in front, palms together",
+        "Twist to one side, breathing in gently through the mouth",
+        "At the end, force it all out through the nose, stomach in hard",
+        "Twist back the other way, breathing in across",
+        "Force it out at the end of that side too",
+        "Alternate for about ten minutes",
+    ],
+    "digestion-igniter": [
+        "Stand up",
+        "Big breath in through the nose",
+        "Lion's breath out: tongue out, Ujjayi, everything emptied",
+        "Hands on your knees with your lungs empty",
+        "Move it around while it is held there",
+        "Stand and breathe in through the nose when you want air",
+    ],
+    "dynamic-breathwork": [
+        "Forty controlled breaths through the mouth",
+        "Breathe everything out and hold on empty",
+        "Stay completely still to begin with",
+        "Shake out and move when the stress response arrives",
+        "Big breath in, sip a little more on top, let it go on an Om",
+        "Finish with a relaxing technique and lie still",
+    ],
+    "sonic-neural": [
+        "Flat on your back with something over your eyes",
+        "Someone with you who understands what this is",
+        "Set an intention",
+        "In through the nose, out through the mouth: belly then chest",
+        "Ninety percent in, ninety percent out",
+        "Move and make noise. The track runs 55 minutes",
+    ],
+}
+
+
+def flash_lines(t):
+    """The back of the card. Override first, else the instruction clause of
+    each step."""
+    if t["slug"] in FLASH:
+        return FLASH[t["slug"]]
+    out = []
+    for s in t["steps"]:
+        s = re.sub("<[^>]+>", "", s).strip()
+        out.append(re.split(r"(?<=[a-z0-9)])\. ", s)[0].rstrip("."))
+    return out[:6]
+
+
 def library_cards():
     """Every technique, as a filterable grid. The card heading is the technique
     name, not a state line: the pills carry the state."""
+    order = list(PILLARS)
+    cards = sorted(
+        (t for t in TECHNIQUES if not t.get("placeholder")),
+        key=lambda t: (order.index(t["pillar"]),
+                       1 if t.get("signature") else 0,
+                       TECHNIQUES.index(t)),
+    )
     out = []
-    for t in TECHNIQUES:
-        if t.get("placeholder"):
+    for t in cards:
+        if False:
             continue
         label = PILLARS[t["pillar"]][0].split(chr(183))[1].strip()
         tags = "|".join(feel_key(x) for x in TAGS.get(t["slug"], []))
-        start = ""
+        badge = ""
         if t.get("start_here"):
-            start = '\n          <p class="start-here">Start here</p>'
+            badge = '<p class="card-badge"><span class="badge badge--start">Start here</span></p>'
         elif t.get("signature"):
-            start = ('\n          <p class="start-here">Ben Holt signature'
-                     '</p>')
-        out.append(f"""        <a class="card tech-card" data-feelings="{tags}"
-          href="{t['pillar']}/{t['slug']}.html">
-          <p class="label">{label}</p>{start}
-          <h3>{t['name']}</h3>
-          <p class="use">{t['short_use']}</p>
-          <p class="card-meta">{meta_html(t['meta'][:2])}</p>
-        </a>""")
+            badge = '<p class="card-badge"><span class="badge badge--signature">Signature</span></p>'
+        href = f"{t['pillar']}/{t['slug']}.html"
+        lines = "\n".join(f"              <li>{x}</li>" for x in flash_lines(t))
+        cid = f"back-{t['slug']}"
+        lands = ""
+        if FEELS.get(t["slug"]):
+            lands = f'\n              <p class="lands">{FEELS[t["slug"]]}</p>'
+        feels = TAGS.get(t["slug"], [])
+        for_line = ""
+        if feels:
+            chips = "".join(f"<span>{x}</span>" for x in feels)
+            for_line = f'\n              <div class="for">{chips}</div>'
+        out.append(f"""        <article class="card tech-card" data-feelings="{tags}">
+          <div class="card-head">
+            <p class="label">{label}</p>
+            <h3><a class="card-link" href="{href}">{t['name']}</a></h3>
+          </div>
+
+          <div class="card-body">
+            <div class="face face--front">
+              <p class="use">{t['short_use']}</p>{lands}{for_line}
+            </div>
+            <div class="face face--back" id="{cid}" data-off>
+              <ol class="flash">
+{lines}
+              </ol>
+            </div>
+            {badge}
+          </div>
+
+          <div class="card-foot">
+            <span class="state-meta">{t['meta'][0]}</span>
+            <button type="button" class="turn" aria-expanded="false"
+              aria-controls="{cid}"><span>Pattern</span></button>
+          </div>
+        </article>""")
     return "\n".join(out)
 
 
@@ -1427,13 +1775,47 @@ FILTER_JS = """<script>
     if (clear) { clear.hidden = active.length === 0; }
   }
 
+  // Turn a card over. DESIGN.md bans transforms, so the faces swap in place
+  // rather than rotating. They share a grid cell, so the card keeps its
+  // height and nothing below it moves.
+  function face(card, showBack) {
+    var front = card.querySelector('.face--front');
+    var back = card.querySelector('.face--back');
+    var btn = card.querySelector('.turn');
+    if (!front || !back || !btn) { return; }
+    if (showBack) {
+      front.setAttribute('data-off', '');
+      back.removeAttribute('data-off');
+    } else {
+      back.setAttribute('data-off', '');
+      front.removeAttribute('data-off');
+    }
+    btn.setAttribute('aria-expanded', showBack ? 'true' : 'false');
+    btn.firstChild.textContent = showBack ? 'Back' : 'Pattern';
+  }
+
+  rows.forEach(function (card) {
+    var btn = card.querySelector('.turn');
+    if (!btn) { return; }
+    btn.addEventListener('click', function () {
+      face(card, btn.getAttribute('aria-expanded') !== 'true');
+    });
+  });
+
   pills.forEach(function (pill) {
     pill.addEventListener('click', function () {
       var f = pill.getAttribute('data-feeling');
       var i = active.indexOf(f);
       if (i === -1) { active.push(f); } else { active.splice(i, 1); }
       pill.setAttribute('aria-pressed', i === -1 ? 'true' : 'false');
+      rows.forEach(function (c) { face(c, false); });
       apply();
+      // Which feeling, and at what hour. No-ops when analytics is off.
+      if (i === -1 && window.plausible) {
+        window.plausible('Feeling', {
+          props: { feeling: f, hour: String(new Date().getHours()) }
+        });
+      }
     });
   });
 
@@ -1449,13 +1831,32 @@ FILTER_JS = """<script>
 
 
 def index_page():
-    return f"""{head('Breath techniques - Clay & Air',
-       'Find the breathing technique for the state you are in, and follow it '
-       'without a facilitator.', 0)}
+    listed = [t for t in TECHNIQUES if not t.get('placeholder')]
+    index_schema = [{
+        "@type": "CollectionPage",
+        "@id": f"{SITE_URL}/#library",
+        "name": "Breath technique library",
+        "url": SITE_URL,
+        "isPartOf": {"@id": f"{SITE_URL}/#site"},
+        "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": len(listed),
+            "itemListElement": [
+                {"@type": "ListItem", "position": i + 1,
+                 "name": re.sub('<[^>]+>', '', t['name']),
+                 "url": canonical(f"{t['pillar']}/{t['slug']}.html")}
+                for i, t in enumerate(listed)
+            ],
+        },
+    }]
+    return f"""{head('Breath techniques for anxiety, sleep and focus - Clay & Air',
+       '19 breathing techniques you can run on your own tonight. Pick how you '
+       'feel and get the technique for it, with the pattern and a video.',
+       0, 'index.html', index_schema)}
 {header(0, 'states')}
 
 <main>
-  <section class="section--tight" style="padding-top:56px">
+  <section class="section--tight section--pad">
     <div class="wrap">
       <p class="label">Breath library</p>
       <h1 class="lede">The one system you can reach directly.</h1>
@@ -1463,7 +1864,7 @@ def index_page():
       nervous system along with it. Take it over for three minutes and the whole
       thing changes gear. {sum(1 for t in TECHNIQUES if not t.get("placeholder"))}
       ways to do that, sorted by what is actually wrong.</p>
-      <p class="label" style="margin-top:var(--space-7)">Pick what is true right now</p>
+      <p class="label label--gap">Pick what is true right now</p>
 {pill_row()}
       <div class="library">
 {library_cards()}
@@ -1478,13 +1879,15 @@ def index_page():
     <div class="wrap">
       <p class="label">The library</p>
       <h2>What these are</h2>
-      <p class="body-lg muted" style="margin-top:16px">Breathing patterns you can
+      <div class="copy">
+      <p class="lead">Breathing patterns you can
       run with nothing you do not already have. You have probably tried one of them
       badly under pressure and found it did nothing. Most of them take three
       minutes when you run them properly.</p>
       <p class="muted">Every technique here is written so you can follow it alone,
       at the point you need it, without reading an essay first. Read one all the
       way through once while you are calm. Then it is there at 3am.</p>
+      </div>
     </div>
   </section>
 
@@ -1492,7 +1895,8 @@ def index_page():
     <div class="wrap">
       <p class="label">Where these come from</p>
       <h2>Ben Holt</h2>
-      <p class="body-lg muted" style="margin-top:16px">Every technique on this
+      <div class="copy">
+      <p class="lead">Every technique on this
       site is one of his, learned through Awakened Breath and the 21 Day
       Breathwork Academy. The three pillars are his framework. The counts, the
       mechanics and the order they are taught in are his. Two of them are his own
@@ -1502,13 +1906,14 @@ def index_page():
       here, so you can find the right one quickly and follow it on your own. If
       you want the source, go to him:
       <a href="https://www.awakenedbreath.org/" rel="noopener">awakenedbreath.org</a>.</p>
+      </div>
     </div>
   </section>
 
   <section class="section section--paper">
     <div class="wrap">
       <p class="label">Three pillars</p>
-      <div class="cards" style="margin-top:24px">
+      <div class="cards cards--spaced">
         <a class="card" href="relaxing/index.html">
           <p class="label">Pillar one</p>
           <h3>Relaxing</h3>
@@ -1532,6 +1937,210 @@ def index_page():
   </section>
 </main>
 {FILTER_JS}
+{footer(0)}"""
+
+
+# The commercial pages. Structure follows ui_kits/website/Intake.jsx: facts on
+# the left, the form in a paper card on the right. The form posts to Netlify
+# Forms, which needs no backend on a static host: the hidden form-name field
+# and data-netlify are what Netlify's build-time HTML parse looks for.
+#
+# ---------------------------------------------------------------------------
+# PLACEHOLDERS. These are structure and voice, not approved business facts.
+# Fill in SESSION_FACTS and SESSION_OPTIONS with the real ones before launch.
+# ---------------------------------------------------------------------------
+
+# Don's own words, his final wording.
+SESSION_WHY = """I know what it is to watch the life I spent decades building
+          become unrecognizable. Over a short stretch, I buried people I
+          loved, lost my marriage, my financial foundation, nearly every
+          relationship I had, and the day-to-day life I knew with my kids. I
+          found myself in a spare bedroom, starting again from scratch, while
+          the responsibility to work, provide, and keep going remained.</p>
+
+          <p class="why">I found breathwork through plant medicine. Plant
+          medicine saved me. Breathwork empowered me by showing me I could
+          bring my body into a deep meditative state with nothing but my own
+          breath. It became a practice I could return to anywhere, even at
+          three in the morning when there was no one to call. When almost
+          everything else was gone, my breath was still mine. That is why I
+          teach it."""
+
+SESSION_FACTS = [
+    ("Workshop", "about an hour", [
+        "The workshop is a place to begin. We move, use Dynamic Breathwork, "
+        "and finish with a guided meditation so you can experience what your "
+        "breath is capable of in your own body.",
+        "You do not need to know how to meditate or be good at slowing down. "
+        "Bring a mat, wear something you can move in, and come as you are.",
+    ]),
+    ("Retreat", "coming soon", [
+        "Some things need more than an hour.",
+        "Sonic Neural is an immersive retreat for men who need enough time "
+        "and distance from ordinary life to stop managing everything and "
+        "listen to what is underneath it. Breath, sound, movement, nature, "
+        "rest, and honest conversation create the conditions. Nothing is "
+        "forced, and there is room for whatever surfaces to settle.",
+        "This is the deeper work I am building toward now. It will be held "
+        "in small groups, in a setting that gives us the space to do it "
+        "properly.",
+    ]),
+]
+
+SESSION_OPTIONS = [
+    ("workshop", "Attend a workshop"),
+    ("retreat", "Hear about the Sonic Neural retreat"),
+    ("group", "Bring a workshop to my group"),
+    ("unsure", "I am not sure yet"),
+]
+
+
+def sessions_page():
+    facts = "\n".join(
+        f"""        <div>
+          <p class="label">{when}</p>
+          <h2>{k}</h2>
+          {"".join(f"<p>{x}</p>" for x in paras)}
+        </div>"""
+        for k, when, paras in SESSION_FACTS
+    )
+    options = "\n".join(
+        f'            <option value="{v}">{lab}</option>'
+        for v, lab in SESSION_OPTIONS
+    )
+    sessions_schema = [{
+        "@type": "Service",
+        "@id": f"{SITE_URL}/sessions#service",
+        "name": "Breathwork workshops and retreats",
+        "serviceType": "Breathwork facilitation",
+        "provider": {"@id": f"{SITE_URL}/#org"},
+        "areaServed": {"@type": "Country", "name": "United States"},
+        "audience": {"@type": "Audience", "audienceType": "Men"},
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Sessions",
+            "itemListElement": [
+                {"@type": "Offer", "itemOffered": {"@type": "Service", "name": k,
+                 "description": paras[0]}}
+                for k, when, paras in SESSION_FACTS
+            ],
+        },
+    }, crumbs([("Breath library", "index.html"), ("Sessions", "sessions.html")])]
+    return f"""{head('Breathwork workshops and retreats for men - Clay & Air',
+                     'Breathwork you do with someone in the room. Workshops '
+                     'about an hour, and an immersive Sonic Neural retreat.',
+                     0, 'sessions.html', sessions_schema)}
+{header(0, 'sessions')}
+
+<main>
+  <section class="technique">
+    <div class="wrap">
+      <div class="intake-open">
+          <p class="label">Sessions</p>
+          <h1>This is the part I do in person.</h1>
+          <p class="purpose">The library gives you practices you can use on
+          your own. In person, I can see when you are forcing, holding back,
+          or ready to go further. I guide the pace, help you stay with what
+          comes up, and leave enough time for you to land before you walk back
+          into your life. That is what a screen cannot do.</p>
+          <p class="label label--gap">Why I teach this</p>
+          <p class="why">{SESSION_WHY}</p>
+      </div>
+
+      <div class="intake">
+        <div class="intake-facts">
+{facts}
+        </div>
+
+        <div class="form-card">
+          <form class="intake-form" name="sessions" method="POST"
+            action="/thanks.html" data-netlify="true"
+            netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="sessions">
+            <p class="pot">
+              <label>Leave this empty <input name="bot-field"></label>
+            </p>
+
+            <p class="label">Start here</p>
+            <p class="small muted">Tell me what you are
+              looking for and what has been going on. Plain words are enough.
+              I read every message myself.</p>
+
+            <div class="field">
+              <label for="f-name">Name</label>
+              <input id="f-name" name="name" type="text" required>
+            </div>
+
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email"
+                placeholder="you@work.com" required>
+            </div>
+
+            <div class="field">
+              <label for="f-about">What you are after</label>
+              <select id="f-about" name="about">
+{options}
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="f-notes">Tell me what has been going on</label>
+              <textarea id="f-notes" name="notes"></textarea>
+            </div>
+
+            <label class="check">
+              <input type="checkbox" name="list" value="yes" checked>
+              <span class="check-body">Send me the occasional note
+                <span class="hint">A few times a month. One practice, and why
+                it works. Unsubscribe from any of them.</span>
+              </span>
+            </label>
+
+            <button type="submit" class="btn btn--primary btn--full">Start the conversation</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {{
+  // arriving from the Sonic Neural page preselects the ceremony
+  var want = new URLSearchParams(location.search).get('about');
+  var sel = document.getElementById('f-about');
+  if (want && sel) {{
+    var ok = Array.prototype.some.call(sel.options, function (o) {{
+      return o.value === want;
+    }});
+    if (ok) {{ sel.value = want; }}
+  }}
+}})();
+</script>
+{footer(0)}"""
+
+
+def thanks_page():
+    return f"""{head('Received - Clay & Air',
+                     'Your message reached Clay & Air.', 0,
+                     'thanks.html').replace(
+        '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">',
+        '<meta name="robots" content="noindex, follow">')}
+{header(0)}
+
+<main>
+  <section class="technique">
+    <div class="wrap">
+      <p class="label">Received</p>
+      <h1>It arrived.</h1>
+      <p class="purpose">You will hear back within a few days. If you do not,
+      send it again and it will be found.</p>
+      <p class="label label--gap">
+        <a class="btn btn--secondary" href="index.html">Back to the library</a>
+      </p>
+    </div>
+  </section>
+</main>
 {footer(0)}"""
 
 
@@ -1584,8 +2193,27 @@ def pillar_page(pillar):
                  "exception: it is a breath hold rather than hard breathing, and "
                  "it settles you as much as it wakes you.</p>")
 
-    return f"""{head(f'{label.split(chr(183))[1].strip()} - Clay & Air',
-       f'{label} breathing techniques.', 1)}
+    pname = label.split(chr(183))[1].strip()
+    pillar_schema = [{
+        "@type": "CollectionPage",
+        "@id": canonical(f"{pillar}/index.html") + "#page",
+        "name": f"{pname} breathing techniques",
+        "url": canonical(f"{pillar}/index.html"),
+        "isPartOf": {"@id": f"{SITE_URL}/#site"},
+        "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": len(items),
+            "itemListElement": [
+                {"@type": "ListItem", "position": i + 1,
+                 "name": re.sub('<[^>]+>', '', t['name']),
+                 "url": canonical(f"{t['pillar']}/{t['slug']}.html")}
+                for i, t in enumerate(items)
+            ],
+        },
+    }, crumbs([("Breath library", "index.html"), (pname, f"{pillar}/index.html")])]
+    return f"""{head(f'{pname} breathing techniques - Clay & Air',
+       PILLAR_DESC[pillar],
+       1, f'{pillar}/index.html', pillar_schema)}
 {header(1, pillar)}
 
 <main>
@@ -1593,13 +2221,106 @@ def pillar_page(pillar):
     <div class="wrap">
       <p class="label">{label}</p>
       {intro}
-      <ul class="tech-list" style="margin-top:40px">
+      <ul class="tech-list tech-list--spaced">
 {rows}
       </ul>
     </div>
   </section>
 </main>
 {footer(1)}"""
+
+
+def redirects_txt():
+    """Netlify publishes the repo root, so the generator and the readme are
+    fetchable as plain text. They belong in git (the generator is the source
+    of truth) but not on the web: one file carries every technique, all the
+    copy and the editorial notes in machine readable form."""
+    hidden = ["/_generate.py", "/README.md", "/RECORDING.md", "/qa.py", "/qa2.py"]
+    lines = ["# Source lives in git, not on the web.", ""]
+    lines += [f"{p}  /  404" for p in hidden]
+    lines.append("")
+    return "\n".join(lines)
+
+
+def robots_txt():
+    """Search crawlers and answer engines both welcome. The assistant crawlers
+    are named explicitly because some of them read a bare Allow as ambiguous,
+    and because being quoted by an assistant is a distribution channel this
+    site actually wants."""
+    agents = ["Googlebot", "Bingbot", "DuckDuckBot", "Applebot",
+              "GPTBot", "OAI-SearchBot", "ChatGPT-User",
+              "ClaudeBot", "Claude-User", "Claude-SearchBot", "anthropic-ai",
+              "PerplexityBot", "Perplexity-User",
+              "Google-Extended", "Applebot-Extended", "meta-externalagent",
+              "Amazonbot", "Bytespider", "CCBot", "cohere-ai", "Diffbot",
+              "YouBot", "Timpibot"]
+    lines = ["# Everything here is meant to be found and quoted.", ""]
+    for a in agents:
+        lines += [f"User-agent: {a}", "Allow: /", ""]
+    lines += ["User-agent: *", "Allow: /", "Disallow: /thanks", "",
+              f"Sitemap: {SITE_URL}/sitemap.xml", ""]
+    return "\n".join(lines)
+
+
+def sitemap_xml(paths):
+    today = time.strftime("%Y-%m-%d")
+    rows = []
+    for p in paths:
+        if p == "thanks.html":
+            continue                      # a form receipt is not a landing page
+        pri = "1.0" if p == "index.html" else (
+            "0.9" if p in ("sessions.html",) or p.endswith("/index.html") else "0.8")
+        rows.append(f"  <url>\n    <loc>{canonical(p)}</loc>\n"
+                    f"    <lastmod>{today}</lastmod>\n"
+                    f"    <priority>{pri}</priority>\n  </url>")
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            + "\n".join(rows) + "\n</urlset>\n")
+
+
+def llms_txt():
+    """The llms.txt convention: a plain text map of the site for language
+    models, so an assistant asked "what should I do for 3am panic" can find
+    the right page instead of guessing from rendered HTML."""
+    out = [f"# {SITE_NAME}", "",
+           f"> {SITE_TAGLINE} A library of {len([t for t in TECHNIQUES if not t.get('placeholder')])} "
+           "breathing techniques you can run on your own, organised by how you "
+           "feel, plus workshops and retreats run in person.", "",
+           "Every technique is taught by Ben Holt, learned through Awakened "
+           "Breath and the 21 Day Breathwork Academy. Dynamic Breathwork and "
+           "Sonic Neural Breathwork are his own designs. Clay & Air is Don "
+           "Page's practice; the wording and the arrangement here are his.", "",
+           "## How to pick one", "",
+           "Techniques are tagged by state. The tags in use are: "
+           + ", ".join(FEELINGS) + ".", ""]
+    for pil, (label, _) in PILLARS.items():
+        name = label.split(chr(183))[1].strip()
+        out += [f"## {name}", "", PILLAR_DESC[pil], ""]
+        for t in TECHNIQUES:
+            if t["pillar"] != pil or t.get("placeholder"):
+                continue
+            plain = html.unescape(re.sub("<[^>]+>", "", t["name"]))
+            use = html.unescape(re.sub("<[^>]+>", "", t["short_use"]))
+            tags = ", ".join(TAGS.get(t["slug"], [])) or "not state tagged"
+            url = canonical(f"{pil}/{t['slug']}.html")
+            out.append(f"- [{plain}]({url}): {use} {t['meta'][0]}, "
+                       f"{t['meta'][1].lower()}. For: {tags}.")
+        out.append("")
+    if SOCIALS:
+        out += ["## Elsewhere", ""]
+        out += [f"- {n}: {u}" for n, u in SOCIALS]
+        out.append("")
+    out += ["## Working with Clay & Air", "",
+            f"- [Sessions]({canonical('sessions.html')}): workshops of about an "
+            "hour, and an immersive Sonic Neural retreat for men, in small "
+            "groups. Contact form on the page.", "",
+            "## Safety", "",
+            "Breath holds and forceful breathing are not for everyone. Anyone "
+            "with a heart or lung condition, high or low blood pressure, "
+            "epilepsy, or who is pregnant should talk to a doctor before "
+            "holding their breath. Never practise these in or near water, or "
+            "while driving.", ""]
+    return "\n".join(out)
 
 
 def write(path, content):
@@ -1611,8 +2332,18 @@ def write(path, content):
 
 
 if __name__ == "__main__":
+    paths = ["index.html", "sessions.html", "thanks.html"]
     write("index.html", index_page())
+    write("sessions.html", sessions_page())
+    write("thanks.html", thanks_page())
     for pillar in PILLARS:
         write(f"{pillar}/index.html", pillar_page(pillar))
+        paths.append(f"{pillar}/index.html")
     for t in TECHNIQUES:
         write(f"{t['pillar']}/{t['slug']}.html", technique_page(t))
+        paths.append(f"{t['pillar']}/{t['slug']}.html")
+
+    write("robots.txt", robots_txt())
+    write("sitemap.xml", sitemap_xml(paths))
+    write("llms.txt", llms_txt())
+    write("_redirects", redirects_txt())
