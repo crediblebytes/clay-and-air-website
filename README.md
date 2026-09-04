@@ -6,6 +6,13 @@ Static HTML. No runtime dependency, no framework, no build step in production.
 
     python3 _dev/generate.py
 
+## Preview it locally
+
+    .\_dev\serve.ps1        # regenerates, checks, serves on :8000
+
+Serve it rather than opening the .html directly. Over `file://` the YouTube
+embeds fail with a configuration error.
+
 Everything that is not the site lives in `_dev/`. Netlify publishes the repo
 root, so `_redirects` 404s that folder: the source is in git, not on the web.
 

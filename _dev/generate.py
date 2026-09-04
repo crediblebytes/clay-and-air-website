@@ -2117,6 +2117,7 @@ def sessions_page():
     }});
     if (ok) {{ sel.value = want; }}
   }}
+
 }})();
 </script>
 {footer(0)}"""
@@ -2137,7 +2138,7 @@ def thanks_page():
       <h1>It arrived.</h1>
       <p class="purpose">You will hear back within a few days. If you do not,
       send it again and it will be found.</p>
-      <p class="label label--gap">
+      <p class="label--gap">
         <a class="btn btn--secondary" href="index.html">Back to the library</a>
       </p>
     </div>

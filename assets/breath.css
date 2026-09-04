@@ -497,6 +497,10 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
+  /* casing and tracking are inherited properties: a button inside a mono
+     label wrapper would otherwise pick up uppercase and letter spacing */
+  text-transform: none;
+  letter-spacing: normal;
   transition: var(--transition-color);
 }
 .btn--primary { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
