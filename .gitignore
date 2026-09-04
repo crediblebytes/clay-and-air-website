@@ -13,10 +13,6 @@ env/
 .env.*
 !.env.example
 
-# Local QA/testing scripts
-qa.py
-qa2.py
-
 # OS junk
 .DS_Store
 Thumbs.db
@@ -30,3 +26,16 @@ desktop.ini
 *.log
 *.tmp
 *.temp
+
+# Where the Claude desktop app drops delivered files. Not part of the site.
+Claude outputs/
+
+# Scratch
+*.stale
+v[0-9].png
+s.py
+
+# Layout note: everything that is not the site lives in _dev/ and is tracked
+# on purpose. _dev/_generate.py is the source of truth and the .html files are
+# its output; _dev/qa.py and _dev/qa2.py are the checks. They are kept off the
+# web by _redirects, not by being kept out of git.

@@ -22,7 +22,9 @@ import os
 import re
 import time
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+# The generator lives in _dev/ and writes the site to the repo root, so
+# nothing but the site itself is ever inside the published directory.
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Search and answer-engine descriptions, one per pillar. Written to answer the
 # question someone actually typed, not to restate the pillar name.
@@ -2231,11 +2233,11 @@ def pillar_page(pillar):
 
 
 def redirects_txt():
-    """Netlify publishes the repo root, so the generator and the readme are
-    fetchable as plain text. They belong in git (the generator is the source
-    of truth) but not on the web: one file carries every technique, all the
-    copy and the editorial notes in machine readable form."""
-    hidden = ["/_generate.py", "/README.md", "/RECORDING.md", "/qa.py", "/qa2.py"]
+    """Netlify publishes the repo root, so anything committed is fetchable.
+    The source lives in _dev/ and belongs in git, but not on the web: one
+    file carries every technique, all the copy and the editorial notes in
+    machine readable form."""
+    hidden = ["/_dev/*", "/README.md"]
     lines = ["# Source lives in git, not on the web.", ""]
     lines += [f"{p}  /  404" for p in hidden]
     lines.append("")

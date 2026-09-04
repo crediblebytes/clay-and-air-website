@@ -1,10 +1,13 @@
 # Clay & Air breath technique library
 
 Static HTML. No runtime dependency, no framework, no build step in production.
-`_generate.py` is a local dev tool that writes the `.html` files, and the
+`_dev/_generate.py` is a local dev tool that writes the `.html` files, and the
 `.html` files are what ship.
 
-    python3 _generate.py
+    python3 _dev/_generate.py
+
+Everything that is not the site lives in `_dev/`. Netlify publishes the repo
+root, so `_redirects` 404s that folder: the source is in git, not on the web.
 
 ## Structure
 
@@ -17,8 +20,9 @@ Static HTML. No runtime dependency, no framework, no build step in production.
     freedom/sonic-neural.html
     assets/breath.css       tokens and components
     assets/mark-*.svg       simplified cut of MARK-01, used below 180px
-    _generate.py            page generator, and all the content
-    qa.py, qa2.py           the checks
+    _dev/_generate.py       page generator, and all the content
+    _dev/qa.py, qa2.py      the checks
+    _redirects              keeps _dev off the web
 
 19 techniques across 3 pillars, 23 pages, 24 embedded videos.
 
@@ -37,7 +41,7 @@ Edit `FEELINGS` (the pill list) and `TAGS` (slug to feelings) to change them.
 
 **Sonic Neural is deliberately untagged.** It appears in the unfiltered grid but
 no feeling ever surfaces it, because a facilitated 55 minute ceremony should
-never be the answer to how someone feels at 2am. `qa2.py` asserts this.
+never be the answer to how someone feels at 2am. `_dev/qa2.py` asserts this.
 
 ## Page order
 
@@ -46,7 +50,7 @@ the pattern, how it lands, what it does, the rest of the pillar.
 
 ## Adding a technique
 
-1. Add a dict to `TECHNIQUES` in `_generate.py`.
+1. Add a dict to `TECHNIQUES` in `_dev/_generate.py`.
 2. Add its feelings to `TAGS`.
 3. Add `FEELS` and `BENEFITS` entries.
 4. `python3 _generate.py`
@@ -92,13 +96,13 @@ original cards brief.
 ## Checks
 
     pip install pyspellchecker --break-system-packages
-    python3 qa.py && python3 qa2.py
+    python3 _dev/qa.py && python3 _dev/qa2.py
 
-`qa.py` covers the output: broken internal links, long dashes, curly quotes,
+`_dev/qa.py` covers the output: broken internal links, long dashes, curly quotes,
 unresolved entities, duplicate titles, unbalanced tags, images without alt, and
 spelling across every word of rendered text.
 
-`qa2.py` covers the data: required fields, meta shape, sentence-ending
+`_dev/qa2.py` covers the data: required fields, meta shape, sentence-ending
 punctuation, double spaces, video id format, tags pointing at nothing, empty
 pillars, and the Sonic Neural tagging rule.
 

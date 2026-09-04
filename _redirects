@@ -1,7 +1,4 @@
 # Source lives in git, not on the web.
 
-/_generate.py  /  404
+/_dev/*  /  404
 /README.md  /  404
-/RECORDING.md  /  404
-/qa.py  /  404
-/qa2.py  /  404
