@@ -603,7 +603,9 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 .pot { position: absolute; left: -9999px; }
 
 /* the quiet close on a technique page. Not a sticky bar, not a banner. */
-.next-step { border-top: var(--hairline) solid var(--border-hairline); padding-top: var(--space-6); }
+/* padding-bottom matches the following section's padding-top, so the button
+   sits centred in the gap rather than flush on the rule below it. */
+.next-step { border-top: var(--hairline) solid var(--border-hairline); padding: var(--space-6) 0 var(--space-8); }
 /* The label keeps its original 24px gap; only the copy-to-button gap opens up
    so the button reads as an action, not as the end of the sentence. */
 .next-step p { color: var(--text-secondary); max-width: var(--measure-prose); margin: var(--space-3) 0 var(--space-5); }
