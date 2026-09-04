@@ -298,7 +298,7 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 .block--tight { margin: calc(var(--space-4) * -1) 0 var(--space-7); }
 .block--tight p:not(.label) { font-size: var(--size-small); line-height: var(--lh-small); }
 
-.benefits { max-width: var(--measure-prose); margin: 0 0 var(--space-9); }
+.benefits { max-width: var(--measure-prose); margin: 0 0 var(--space-7); }
 .benefits ul { list-style: none; margin: 0; padding: 0; }
 .benefits li {
   font-size: var(--size-body);
@@ -604,7 +604,10 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
 
 /* the quiet close on a technique page. Not a sticky bar, not a banner. */
 .next-step { border-top: var(--hairline) solid var(--border-hairline); padding-top: var(--space-6); }
+/* The label keeps its original 24px gap; only the copy-to-button gap opens up
+   so the button reads as an action, not as the end of the sentence. */
 .next-step p { color: var(--text-secondary); max-width: var(--measure-prose); margin: var(--space-3) 0 var(--space-5); }
+.next-step p:not(.label) { margin-bottom: var(--space-6); }
 
 @media (max-width: 900px) {
   .intake { grid-template-columns: 1fr; gap: var(--space-7); }

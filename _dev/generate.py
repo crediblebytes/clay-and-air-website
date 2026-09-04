@@ -1515,7 +1515,7 @@ def technique_page(t):
         <p class="label">If you want a hand with it</p>
         <p>This one works on your own. Some of it lands harder with someone
         in the room, and that is what the workshops are for.</p>
-        <a class="btn btn--secondary" href="{up}sessions.html">Sessions</a>
+        <a class="btn btn--primary" href="{up}sessions.html">Sessions</a>
       </div>"""
 
     sib_block = ""
