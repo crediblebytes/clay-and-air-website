@@ -37,6 +37,16 @@ for t, fs in titles.items():
 
 # --- spelling over visible text ---
 sp = SpellChecker()
+# Real words the dictionary does not carry: brand and platform names, and the
+# possessive forms it splits badly. Kept here so the report stays empty unless
+# something is actually wrong, which is the only way a check gets read.
+sp.word_frequency.load_words([
+    "holt", "holt's", "ujjayi", "nadi", "shodhana", "kapalabhati",
+    "bhastrika", "buteyko", "kundalini", "pranayama", "qi", "gong",
+    "breathwork", "neuro", "linguistic", "immersive",
+    "instagram", "tiktok", "youtube", "netlify", "plausible", "org",
+    "clayandair", "clayandairnow",
+])
 allow = set("""ujjayi nadi shodhana bhastrika kapalabhati buteyko qi gong tummo
 kundalini pranayama savasana hormesis parasympathetic vagus namaste clay
 awakenedbreath holt wim hof himalayas sedona youtube favicon svg html css

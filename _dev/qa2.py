@@ -22,7 +22,9 @@ for t in g.TECHNIQUES:
         if isinstance(v,str):
             if '  ' in v: issues['double space'].append(f"{t['slug']} {fld}")
             if not v.rstrip().endswith(('.','?','!')): issues['no end punctuation'].append(f"{t['slug']} {fld}")
-    if not t["name"][0].isupper(): issues['name case'].append(t["slug"])
+    # a name may legitimately start with a digit, as 4·3·6 does
+    if not (t["name"][0].isupper() or t["name"][0].isdigit()):
+        issues['name case'].append(t["slug"])
     vids = [v[2] for v in t.get("videos", [])] + ([t["video_id"]] if t.get("video_id") else [])
     for v in vids:
         if not re.fullmatch(r'[A-Za-z0-9_-]{11}', v):
