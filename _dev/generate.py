@@ -1112,7 +1112,12 @@ SOCIALS = [
 
 SITE_URL = "https://clayandair.com"
 SITE_NAME = "Clay & Air"
-SITE_TAGLINE = "Breathwork for men who hold it together."
+# The tagline is the line people read. SITE_DESC is the line machines read:
+# search snippets, the Organization schema, llms.txt. The tagline is a poem and
+# says nothing about what this is, so it cannot do that second job on its own.
+SITE_TAGLINE = "Built from clay. Brought to life by breath."
+SITE_DESC = ("Breathwork for men. A library of breathing techniques you can run "
+             "on your own, plus workshops and retreats run in person.")
 
 
 def canonical(path):
@@ -1135,7 +1140,8 @@ def org_schema():
         "@id": f"{SITE_URL}/#org",
         "name": SITE_NAME,
         "url": SITE_URL,
-        "description": SITE_TAGLINE,
+        "description": SITE_DESC,
+        "slogan": SITE_TAGLINE,
         "logo": f"{SITE_URL}/assets/share.png",
         "founder": {"@type": "Person", "name": "Don Page"},
         "sameAs": [u for _, u in SOCIALS],
@@ -1182,7 +1188,7 @@ def head(title, desc, depth, path, schema=None):
   <meta property="og:image" content="{SITE_URL}/assets/share.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Clay &amp; Air, breathwork for men who hold it together">
+  <meta property="og:image:alt" content="Clay &amp; Air. Built from clay. Brought to life by breath.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{title}">
   <meta name="twitter:description" content="{desc}">
@@ -1243,7 +1249,7 @@ def footer(depth):
         <img class="footer-lockup" src="{up}assets/lockup-reversed-outlined.svg"
           alt="Clay &amp; Air" width="475" height="167">
         <p class="label label--tertiary lockup-line">Breath <span class="dot">&middot;</span> Discipline <span class="dot">&middot;</span> Daylight</p>
-        <p class="bio">Breathwork for men who hold it together.</p>
+        <p class="bio">{SITE_TAGLINE}</p>
       </div>
       <div class="footer-col">
         <p class="label label--tertiary">Practice</p>
@@ -1947,9 +1953,8 @@ def index_page():
 # Forms, which needs no backend on a static host: the hidden form-name field
 # and data-netlify are what Netlify's build-time HTML parse looks for.
 #
-# ---------------------------------------------------------------------------
-# PLACEHOLDERS. These are structure and voice, not approved business facts.
-# Fill in SESSION_FACTS and SESSION_OPTIONS with the real ones before launch.
+# WORKSHOPS is the offer ladder: Centering, First Fire, The Kiln. Each one
+# mirrors its print one-sheet, so change both together.
 # ---------------------------------------------------------------------------
 
 # Don's own words, his final wording.
@@ -1968,44 +1973,114 @@ SESSION_WHY = """I know what it is to watch the life I spent decades building
           everything else was gone, my breath was still mine. That is why I
           teach it."""
 
-SESSION_FACTS = [
-    ("Workshop", "about an hour", [
-        "The workshop is a place to begin. We move, use Dynamic Breathwork, "
-        "and finish with a guided meditation so you can experience what your "
-        "breath is capable of in your own body.",
-        "You do not need to know how to meditate or be good at slowing down. "
-        "Bring a mat, wear something you can move in, and come as you are.",
-    ]),
-    ("Retreat", "coming soon", [
-        "Some things need more than an hour.",
-        "Sonic Neural is an immersive retreat for men who need enough time "
-        "and distance from ordinary life to stop managing everything and "
-        "listen to what is underneath it. Breath, sound, movement, nature, "
-        "rest, and honest conversation create the conditions. Nothing is "
-        "forced, and there is room for whatever surfaces to settle.",
-        "This is the deeper work I am building toward now. It will be held "
-        "in small groups, in a setting that gives us the space to do it "
-        "properly.",
-    ]),
+WORKSHOPS = [
+    {
+        "slug": "centering",
+        "about": "centering",
+        "name": "Centering",
+        "technique": "Foundational breathwork",
+        "head": "Nothing to believe in. It still works at 3am.",
+        "lead": "You already breathe. This is just doing it on purpose.",
+        "specs": [
+            ("Format", "1 hour. 8 to 25 people. Any time of day."),
+            ("For", "Anyone. No experience or flexibility needed."),
+            ("Flow", 'Handpan while people settle. <a href="relaxing/'
+                     'foundational-breath.html">Foundational breath</a>, then '
+                     '<a href="relaxing/box-breathing.html">box breathing</a>, '
+                     'then <a href="relaxing/cleansing-breath.html">cleansing '
+                     'breath</a> lying down with tuning forks.'),
+            ("You provide", "A quiet room, floor space, low light if you have it."),
+            ("I bring", "Speaker, tuning forks, handpan, spare mats."),
+        ],
+        "pull": "It sounds soft. It is.",
+        "safety": "Slow nasal breathing with short holds. If you have a heart "
+                  "or lung condition, high or low blood pressure, epilepsy, or "
+                  "you are pregnant, talk to a doctor before holding your breath.",
+    },
+    {
+        "slug": "first-fire",
+        "about": "first-fire",
+        "name": "First Fire",
+        "technique": "Dynamic breathwork",
+        "head": "Yes, it is breathwork. No, nobody hugs you.",
+        "lead": "Forty hard breaths and two holds. Then you find out.",
+        "specs": [
+            ("Format", "1 hour. 8 to 20 people. Morning or afternoon."),
+            ("For", "Anyone cleared to hold their breath. No experience needed."),
+            ("Flow", 'Handpan and resin while people settle. '
+                     '<a href="relaxing/foundational-breath.html">Foundational '
+                     'breath</a>, then <a href="activating/dynamic-breathwork'
+                     '.html">Dynamic breathwork</a>, then <a href="relaxing/'
+                     'cleansing-breath.html">cleansing breath</a> flat on the '
+                     'floor.'),
+            ("You provide", "Floor space and room for everyone to lie flat."),
+            ("I bring", "Speaker, tuning forks, handpan, resin, spare mats."),
+        ],
+        "pull": "It sounds soft. It is not.",
+        "safety": "Fast, active breathing with two breath holds. Tell me in "
+                  "advance about fainting, panic attacks, pregnancy, blood "
+                  "pressure, epilepsy, or any heart or lung condition.",
+    },
+    {
+        "slug": "the-kiln",
+        # the freedom page already links sessions.html?about=retreat, so the
+        # value stays "retreat" even though the label is now the workshop name
+        "about": "retreat",
+        "deep": True,
+        "name": "The Kiln",
+        "technique": "Sonic Neural Breathwork",
+        "head": "Fifty five minutes with your eyes covered.",
+        "lead": "The rest of the three and a half hours is arriving and "
+                "coming back.",
+        "specs": [
+            ("Format", "3.5 hours. 6 to 15 people. Afternoon start."),
+            ("For", "Screened in advance. Intake form and waiver required."),
+            ("Flow", 'An hour to arrive and set intentions. Fifty five minutes '
+                     'of <a href="freedom/sonic-neural.html">Sonic Neural '
+                     'Breathwork</a>. Then a slow way back, food, and a share '
+                     'circle nobody has to speak in.'),
+            ("You provide", "A private room, low light, restrooms, floor space."),
+            ("I bring", "Sound system, tuning forks, handpan, resin, a second "
+                        "space holder."),
+        ],
+        "pull": "Most people only need this once a year.",
+        "safety": "Everyone completes an intake form and signs a waiver before "
+                  "this one. Screening covers heart conditions, epilepsy, eye "
+                  "conditions, pregnancy, blood thinners and panic attacks.",
+    },
 ]
 
 SESSION_OPTIONS = [
-    ("workshop", "Attend a workshop"),
-    ("retreat", "Hear about the Sonic Neural retreat"),
-    ("group", "Bring a workshop to my group"),
+    ("centering", "Centering, the relaxing hour"),
+    ("first-fire", "First Fire, the Dynamic hour"),
+    ("retreat", "The Kiln, Sonic Neural"),
+    ("group", "Bring one to my gym, studio or retreat"),
     ("unsure", "I am not sure yet"),
 ]
 
 
-def sessions_page():
-    facts = "\n".join(
-        f"""        <div>
-          <p class="label">{when}</p>
-          <h2>{k}</h2>
-          {"".join(f"<p>{x}</p>" for x in paras)}
-        </div>"""
-        for k, when, paras in SESSION_FACTS
+def workshop_block(w):
+    specs = "\n".join(
+        f"          <dt>{k}</dt>\n          <dd>{v}</dd>"
+        for k, v in w["specs"]
     )
+    deep = " offer--deep" if w.get("deep") else ""
+    return f"""      <article class="offer{deep}" id="{w['slug']}">
+        <p class="offer-name">{w['name']} <span class="dot">&middot;</span> {w['technique']}</p>
+        <h2>{w['head']}</h2>
+        <p class="offer-lead">{w['lead']}</p>
+        <dl class="offer-specs">
+{specs}
+        </dl>
+        <p class="offer-pull">{w['pull']}</p>
+        <p class="offer-safety">{w['safety']}</p>
+        <p class="offer-go"><a class="btn btn--secondary" href="#start"
+          data-about="{w['about']}">Ask about {w['name']}</a></p>
+      </article>"""
+
+
+def sessions_page():
+    offers = "\n".join(workshop_block(w) for w in WORKSHOPS)
     options = "\n".join(
         f'            <option value="{v}">{lab}</option>'
         for v, lab in SESSION_OPTIONS
@@ -2022,15 +2097,18 @@ def sessions_page():
             "@type": "OfferCatalog",
             "name": "Sessions",
             "itemListElement": [
-                {"@type": "Offer", "itemOffered": {"@type": "Service", "name": k,
-                 "description": paras[0]}}
-                for k, when, paras in SESSION_FACTS
+                {"@type": "Offer", "itemOffered": {
+                    "@type": "Service",
+                    "name": f"{w['name']} ({w['technique']})",
+                    "description": w["lead"]}}
+                for w in WORKSHOPS
             ],
         },
     }, crumbs([("Breath library", "index.html"), ("Sessions", "sessions.html")])]
-    return f"""{head('Breathwork workshops and retreats for men - Clay & Air',
-                     'Breathwork you do with someone in the room. Workshops '
-                     'about an hour, and an immersive Sonic Neural retreat.',
+    return f"""{head('Breathwork workshops for men - Clay & Air',
+                     'Three breathwork workshops you can book for a gym, a '
+                     'studio or a retreat. Two run an hour. The third runs '
+                     'three and a half.',
                      0, 'sessions.html', sessions_schema)}
 {header(0, 'sessions')}
 
@@ -2045,13 +2123,29 @@ def sessions_page():
           or ready to go further. I guide the pace, help you stay with what
           comes up, and leave enough time for you to land before you walk back
           into your life. That is what a screen cannot do.</p>
-          <p class="label label--gap">Why I teach this</p>
-          <p class="why">{SESSION_WHY}</p>
+          <p class="purpose">Three workshops. Two run an hour and need nothing
+          but a room. The third takes an afternoon. All of them travel, so a
+          gym, a studio or a retreat can host one.</p>
+          <p class="offer-go"><a class="btn btn--primary" href="#start">Start the conversation</a></p>
       </div>
 
+      <div class="offers">
+{offers}
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight" id="start">
+    <div class="wrap">
       <div class="intake">
-        <div class="intake-facts">
-{facts}
+        <div class="intake-why">
+          <p class="label">Why I teach this</p>
+          <p class="why">{SESSION_WHY}</p>
+          <p class="label label--gap">What happens next</p>
+          <p class="why">I read every message myself and reply within a couple
+          of days. If you are asking about a date for your space, tell me
+          roughly how many people and what the room is like, and I will send
+          the run sheet back.</p>
         </div>
 
         <div class="form-card">
@@ -2108,16 +2202,24 @@ def sessions_page():
 </main>
 <script>
 (function () {{
+  var sel = document.getElementById('f-about');
+  if (!sel) {{ return; }}
+  function pick(v) {{
+    var ok = Array.prototype.some.call(sel.options, function (o) {{
+      return o.value === v;
+    }});
+    if (ok) {{ sel.value = v; }}
+  }}
   // arriving from the Sonic Neural page preselects the ceremony
   var want = new URLSearchParams(location.search).get('about');
-  var sel = document.getElementById('f-about');
-  if (want && sel) {{
-    var ok = Array.prototype.some.call(sel.options, function (o) {{
-      return o.value === want;
-    }});
-    if (ok) {{ sel.value = want; }}
-  }}
-
+  if (want) {{ pick(want); }}
+  // the per-workshop buttons jump to the form with that workshop chosen
+  Array.prototype.forEach.call(
+    document.querySelectorAll('[data-about]'),
+    function (a) {{
+      a.addEventListener('click', function () {{ pick(a.dataset.about); }});
+    }}
+  );
 }})();
 </script>
 {footer(0)}"""
@@ -2312,9 +2414,10 @@ def llms_txt():
     models, so an assistant asked "what should I do for 3am panic" can find
     the right page instead of guessing from rendered HTML."""
     out = [f"# {SITE_NAME}", "",
-           f"> {SITE_TAGLINE} A library of {len([t for t in TECHNIQUES if not t.get('placeholder')])} "
+           f"> Breathwork for men. A library of {len([t for t in TECHNIQUES if not t.get('placeholder')])} "
            "breathing techniques you can run on your own, organised by how you "
-           "feel, plus workshops and retreats run in person.", "",
+           "feel, plus workshops and retreats run in person. "
+           f"{SITE_TAGLINE}", "",
            "Every technique is taught by Ben Holt, learned through Awakened "
            "Breath and the 21 Day Breathwork Academy. Dynamic Breathwork and "
            "Sonic Neural Breathwork are his own designs. Clay & Air is Don "
@@ -2340,9 +2443,10 @@ def llms_txt():
         out += [f"- {n}: {u}" for n, u in SOCIALS]
         out.append("")
     out += ["## Working with Clay & Air", "",
-            f"- [Sessions]({canonical('sessions.html')}): workshops of about an "
-            "hour, and an immersive Sonic Neural retreat for men, in small "
-            "groups. Contact form on the page.", "",
+            f"- [Sessions]({canonical('sessions.html')}): three bookable "
+            "workshops. Centering and First Fire run an hour; The Kiln is a "
+            "three and a half hour Sonic Neural session. Contact form on the "
+            "page.", "",
             "## Safety", "",
             "Breath holds and forceful breathing are not for everyone. Anyone "
             "with a heart or lung condition, high or low blood pressure, "

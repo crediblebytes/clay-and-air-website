@@ -53,7 +53,7 @@ awakenedbreath holt wim hof himalayas sedona youtube favicon svg html css
 breathwork nostril nostrils exhale exhales inhale inhales exhaling inhaling
 diaphragmatic alkalises alkalise visualisation nocookie tia tias om
 prefrontal subconscious lightheaded reps cadence bone soot terracotta
-ochre newsreader ibm plex mono chapstick tetany""".split())
+ochre newsreader ibm plex mono chapstick tetany handpan""".split())
 words = collections.Counter()
 for f in files:
     s = open(f, encoding='utf-8').read()
