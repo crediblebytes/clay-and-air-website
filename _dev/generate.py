@@ -1328,6 +1328,7 @@ def header(depth, current=None):
         </div>
       </details>
       {nav('workshops.html', 'Workshops', 'workshops')}
+      {nav('about.html', 'About', 'about')}
     </nav>
   </div>
 {NAV_JS}
@@ -2390,6 +2391,128 @@ def sessions_page():
 {footer(0)}"""
 
 
+# The About page. PRACTICE is the three parts of the practice, in order.
+# Edit the wording here and rerun the generator.
+PRACTICE_INTRO = ("Three things, every day. Each one helps on its own. "
+                  "Together they are how I rebuilt.")
+
+PRACTICE = [
+    ("Breath",
+     "The one thing you never stop doing, done on purpose. Slow it down to "
+     "come back to yourself, speed it up to wake up, and let it carry out "
+     "what you have been holding."),
+    ("Discipline",
+     "The small things done daily when nobody is watching. Cold water. Clean "
+     "food. Clearing out what drains you and making room for something that "
+     "grows."),
+    ("Daylight",
+     "Real sun, early and every day. Outside, no sunglasses, the sky in your "
+     "eyes and light on your skin. Your body sets its clock by the sun, and "
+     "most of us live under ceiling lights. On the days it does not show, red "
+     "light fills the gap."),
+]
+
+
+PRACTICE_IMAGES = {
+    "Breath": ("assets/about/breath.jpg",
+               "Don sitting in a field at sunrise, breathing"),
+    "Discipline": ("assets/about/discipline.jpg",
+                   "Oyster mushrooms sliced and seasoned on a cutting board"),
+    "Daylight": ("assets/about/daylight.jpg",
+                 "A dog on a rock overlook at sundown, looking out over the valley"),
+}
+
+
+def about_page():
+    cards = "\n".join(
+        f"""          <article class="practice-card">
+            <img src="{PRACTICE_IMAGES[title][0]}" alt="{PRACTICE_IMAGES[title][1]}"
+              width="960" height="720" loading="lazy">
+            <div class="practice-body">
+              <p class="label">{title}</p>
+              <p>{body}</p>
+            </div>
+          </article>"""
+        for title, body in PRACTICE
+    )
+    handle = "@clayandairnow"
+    follow_btns = "\n".join(
+        f'          <a class="btn btn--secondary" href="{u}" rel="me noopener">{n}</a>'
+        for n, u in SOCIALS)
+    schema = [crumbs([("Breath library", "index.html"), ("About", "about.html")])]
+    return f"""{head('About - Clay & Air',
+                     'Built from clay. Brought to life by breath. Who is behind '
+                     'Clay & Air, and the practice: Breath, Discipline, Daylight.',
+                     0, 'about.html', schema)}
+{header(0, 'about')}
+
+<main>
+  <section class="technique">
+    <div class="wrap">
+      <div class="about-hero">
+        <div>
+          <p class="label">About</p>
+          <h1>{SITE_TAGLINE}</h1>
+          <p class="purpose">I am Don. Clay &amp; Air is how I put my life back
+          together, and it is how I want to help other people heal.</p>
+          <div class="about-story">
+            <p class="label">My story</p>
+            <p class="why">{SESSION_WHY}</p>
+          </div>
+        </div>
+        <img class="about-portrait" src="assets/about/don.jpg"
+          alt="Don holding a cluster of oyster mushrooms he grew"
+          width="960" height="1200">
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="wrap">
+      <p class="label">The Practice</p>
+      <h2 class="practice-title">Breath. Discipline. Daylight.</h2>
+      <p class="practice-intro">{PRACTICE_INTRO}</p>
+      <div class="practice-grid">
+{cards}
+      </div>
+    </div>
+  </section>
+
+  <section class="technique">
+    <div class="wrap">
+      <div class="block">
+        <p class="label">Where I am now</p>
+        <p class="why">I am training with Ben Holt through Awakened Breath and
+        the 21 Day Breathwork Academy, and I practice every day. The <a
+        href="index.html">library</a> is what I practice, shared as I learn
+        it.</p>
+      </div>
+
+      <div class="next-step">
+        <p class="label">Breathe with me</p>
+        <p>Three workshops, at my place or yours.</p>
+        <a class="btn btn--primary" href="workshops.html">Workshops</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="follow">
+    <div class="wrap">
+      <p class="label">Stick around</p>
+      <h2>Follow along on my journey.</h2>
+      <p>I am early in this, and I am sharing it as it happens. Breathing in
+      the woods, cold water, food I grow and cook, the fire at night. Come
+      along for it.</p>
+      <p class="follow-handle">{handle}</p>
+      <div class="follow-btns">
+{follow_btns}
+      </div>
+    </div>
+  </section>
+</main>
+{footer(0)}"""
+
+
 def thanks_page():
     return f"""{head('Received - Clay & Air',
                      'Your message reached Clay & Air.', 0,
@@ -2633,9 +2756,10 @@ def write(path, content):
 
 
 if __name__ == "__main__":
-    paths = ["index.html", "workshops.html", "thanks.html"]
+    paths = ["index.html", "workshops.html", "about.html", "thanks.html"]
     write("index.html", index_page())
     write("workshops.html", sessions_page())
+    write("about.html", about_page())
     write("thanks.html", thanks_page())
     for pillar in PILLARS:
         write(f"{pillar}/index.html", pillar_page(pillar))

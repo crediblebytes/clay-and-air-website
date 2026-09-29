@@ -887,3 +887,97 @@ a.card-link:hover { color: var(--text-body); }
 .turn:hover { color: var(--text-link-hover); }
 .turn::after { content: ""; position: absolute; inset: -12px 0 -12px -12px; }
 .turn:focus-visible { outline: var(--hairline) solid var(--soot); outline-offset: 2px; }
+
+/* ---------- about ----------
+   Hero: words left, portrait right. The Practice: three photo cards in a row.
+   Follow: one full-bleed soot band, the page's single dark moment. */
+.about-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-9);
+  align-items: start;
+  margin: 0;
+}
+.about-story { margin-top: var(--space-8); }
+.about-story .why { max-width: none; }
+.about-portrait {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: var(--hairline) solid var(--border-hairline);
+}
+.about-handle {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: var(--space-5) 0 0;
+}
+.about-handle a { margin-left: var(--space-2); }
+.practice-title {
+  font: var(--weight-display) var(--size-h2) / var(--lh-h2) var(--font-display);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--space-3);
+}
+.practice-intro {
+  color: var(--text-secondary);
+  max-width: var(--measure-prose);
+  margin: 0 0 var(--space-7);
+}
+.practice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin: 0;
+}
+.practice-card {
+  background: var(--surface-card);
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.practice-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-bottom: var(--hairline) solid var(--border-hairline);
+}
+.practice-body { padding: var(--space-5) var(--space-6) var(--space-6); }
+.practice-body .label { color: var(--text-accent); margin: 0 0 var(--space-2); }
+.practice-body p:not(.label) {
+  font-size: var(--size-small);
+  line-height: var(--lh-small);
+  color: var(--text-secondary);
+  margin: 0;
+}
+.follow {
+  border-top: var(--hairline) solid var(--border-hairline);
+  padding: var(--space-9) 0 var(--space-10);
+}
+.follow-handle {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+.follow h2 {
+  font: var(--weight-display) var(--size-h2) / var(--lh-h2) var(--font-display);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--space-3);
+}
+.follow p:not(.label) {
+  color: var(--text-secondary);
+  max-width: var(--measure-prose);
+  margin: 0 0 var(--space-6);
+}
+.follow-btns { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+@media (max-width: 800px) {
+  .about-hero { grid-template-columns: 1fr; gap: var(--space-6); }
+  .about-portrait { max-width: 420px; grid-row: 1; }
+  .practice-grid { grid-template-columns: 1fr; }
+}
