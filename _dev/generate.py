@@ -26,6 +26,23 @@ import time
 # nothing but the site itself is ever inside the published directory.
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+def css_version():
+    """A short hash of the stylesheets, added to the link as ?v=. When the CSS
+    changes the URL changes, so a browser never pairs new HTML with a stale
+    cached stylesheet."""
+    import hashlib
+    h = hashlib.md5()
+    files = ["assets/breath.css"] + sorted(
+        "assets/tokens/" + f for f in os.listdir(os.path.join(HERE, "assets/tokens")))
+    for f in files:
+        with open(os.path.join(HERE, f), "rb") as fh:
+            h.update(fh.read())
+    return h.hexdigest()[:8]
+
+
+CSS_V = css_version()
+
 # Search and answer-engine descriptions, one per pillar. Written to answer the
 # question someone actually typed, not to restate the pillar name.
 PILLAR_DESC = {
@@ -1019,6 +1036,72 @@ BENEFITS = {
 # Sourced from the course videos and the practitioner's own notes.
 # ---------------------------------------------------------------------------
 
+# The science behind a technique. Same card as the basics, placed after "What
+# it does". Summarised from Ben Holt's "The Science Behind Dynamic Breathwork"
+# notes and checked against the studies linked in SCIENCE_SOURCES.
+SCIENCE_INTRO = {
+    "dynamic-breathwork":
+        "Every part of the round does a bit of everything. Each step also has "
+        "one job it does best, and that is the easiest way to remember it.",
+}
+
+SCIENCE = {
+    "dynamic-breathwork": [
+        ("The forty breaths: inflammation",
+         "Fast, full breathing blows off carbon dioxide. CO2 is what keeps your "
+         "blood slightly acidic, so as it drops your blood pH rises for a "
+         "while. That shift is the tingling in your hands and face, and it "
+         "settles within minutes of breathing normally again. In an eight week "
+         "trial, people with an inflammatory arthritis of the spine who added "
+         "this style of breathing, cold exposure and meditation saw their "
+         "inflammation markers and disease activity come down. The group that "
+         "did not train saw no change."),
+        ("The empty hold: immunity",
+         "Holding on empty is a deliberate dose of stress, and your body "
+         "answers with a surge of adrenaline. That is the hormesis you feel as "
+         "the nervous wave. In a 2014 study, researchers gave men a piece of E. "
+         "coli bacteria that brings on fever, chills and headache for a few "
+         "hours. The men trained in this breathing had more adrenaline, more "
+         "of the body's own anti-inflammatory signal, less of the inflammatory "
+         "ones, and far fewer flu symptoms than the men who were not. Their "
+         "immune systems still answered. They just answered cleaner."),
+        ("The full hold: lung capacity",
+         "Your lungs peak in your mid twenties. After about 35 they lose a "
+         "little every year: the diaphragm weakens, the lung tissue loses its "
+         "stretch and the rib cage stiffens. The big breath and the sip on top "
+         "take the lungs and ribs to the end of their range every round. That "
+         "matters because the Framingham Heart Study, which has followed "
+         "thousands of people since 1948, found that lower vital capacity, the "
+         "most air you can move in one breath, predicted heart disease and an "
+         "earlier death."),
+        ("The Om: the nervous system",
+         "The vagus nerve runs from the brainstem to the heart, the lungs and "
+         "the gut, and it is the main line of the rest and digest side of your "
+         "nervous system. A long, slow exhale works it, and humming carries "
+         "vibration through the throat and ears where its branches run. In a "
+         "small brain scan study, chanting Om quieted the same regions that "
+         "electrical vagus nerve stimulation does. It is why the round leaves "
+         "you calm and clear rather than wired."),
+    ],
+}
+
+SCIENCE_SOURCES = {
+    "dynamic-breathwork": [
+        ("The immune study: Kox and others, PNAS, 2014",
+         "https://pmc.ncbi.nlm.nih.gov/articles/PMC4034215/"),
+        ("The inflammation trial: Buijze and others, PLOS ONE, 2019",
+         "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0225749"),
+        ("Vital capacity in the Framingham study: Kannel and Hubert, 1983",
+         "https://www.sciencedirect.com/science/article/abs/pii/000287038390532X"),
+        ("Lung capacity and aging: American Lung Association",
+         "https://www.lung.org/lung-health-diseases/how-lungs-work/lung-capacity-and-aging"),
+        ("Om chanting and the brain: Kalyani and others, 2011",
+         "https://pubmed.ncbi.nlm.nih.gov/21654968/"),
+        ("The vagus nerve: Cleveland Clinic",
+         "https://my.clevelandclinic.org/health/body/22279-vagus-nerve"),
+    ],
+}
+
 BASICS_INTRO = (
     "You have been breathing badly all day and it has been feeding the thing "
     "you are trying to fix. Sharp and shallow, high in the chest, through the "
@@ -1198,9 +1281,26 @@ def head(title, desc, depth, path, schema=None):
   <link rel="icon" href="{up}assets/mark-01-micro.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="{up}assets/favicon-32.png">
   {FONTS}
-  <link rel="stylesheet" href="{up}assets/breath.css">{analytics()}{ld}
+  <link rel="stylesheet" href="{up}assets/breath.css?v={CSS_V}">{analytics()}{ld}
 </head>
 <body>"""
+
+
+# Closes the Pillars menu on a click outside it, or on Escape.
+NAV_JS = """  <script>
+    document.addEventListener("click", function (e) {
+      document.querySelectorAll("details.nav-group[open]").forEach(function (d) {
+        if (!d.contains(e.target)) d.removeAttribute("open");
+      });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      document.querySelectorAll("details.nav-group[open]").forEach(function (d) {
+        d.removeAttribute("open");
+        d.querySelector("summary").focus();
+      });
+    });
+  </script>"""
 
 
 def header(depth, current=None):
@@ -1208,6 +1308,8 @@ def header(depth, current=None):
     def nav(href, label, key):
         cur = ' aria-current="page"' if current == key else ""
         return f'<a href="{up}{href}"{cur}>{label}</a>'
+    pillar_cur = (' class="is-current"'
+                  if current in ("relaxing", "activating", "freedom") else "")
     return f"""
 <header class="site-header">
   <div class="wrap">
@@ -1217,12 +1319,18 @@ def header(depth, current=None):
     </a>
     <nav class="site-nav">
       {nav('index.html', 'Library', 'states')}
-      {nav('relaxing/index.html', 'Relaxing', 'relaxing')}
-      {nav('activating/index.html', 'Activating', 'activating')}
-      {nav('freedom/index.html', 'Freedom', 'freedom')}
-      {nav('sessions.html', 'Sessions', 'sessions')}
+      <details class="nav-group">
+        <summary{pillar_cur}>Pillars</summary>
+        <div class="nav-menu">
+          {nav('relaxing/index.html', 'Relaxing', 'relaxing')}
+          {nav('activating/index.html', 'Activating', 'activating')}
+          {nav('freedom/index.html', 'Freedom', 'freedom')}
+        </div>
+      </details>
+      {nav('workshops.html', 'Workshops', 'workshops')}
     </nav>
   </div>
+{NAV_JS}
 </header>"""
 
 
@@ -1269,8 +1377,7 @@ def footer(depth):
       </div>{social_col}
     </div>
     <div class="footer-bottom">
-      <p class="disclaimer">Techniques taught by Ben Holt. If you have a heart or
-      lung condition, high or low blood pressure, epilepsy, or you are pregnant,
+      <p class="disclaimer">If you have a heart or lung condition, high or low blood pressure, epilepsy, or you are pregnant,
       talk to a doctor before holding your breath.</p>
       <span class="copyright">&copy; 2026 Clay &amp; Air</span>
     </div>
@@ -1453,6 +1560,38 @@ def technique_page(t):
         </ul>
       </div>"""
 
+    science = ""
+    if SCIENCE.get(t["slug"]):
+        rows = "\n".join(
+            f"""          <div class="basic">
+            <p class="label">{title}</p>
+            <p>{body}</p>
+          </div>"""
+            for title, body in SCIENCE[t["slug"]]
+        )
+        intro = ""
+        if SCIENCE_INTRO.get(t["slug"]):
+            intro = f'\n        <p class="basics-intro">{SCIENCE_INTRO[t["slug"]]}</p>'
+        science = f"""
+      <section class="basics">
+        <p class="label">The science</p>{intro}
+        <div class="basics-list">
+{rows}
+        </div>
+      </section>"""
+    if SCIENCE_SOURCES.get(t["slug"]):
+        rows = "\n".join(
+            f'          <li><a href="{href}" rel="noopener">{text}</a></li>'
+            for text, href in SCIENCE_SOURCES[t["slug"]]
+        )
+        science += f"""
+      <div class="benefits">
+        <p class="label">Read the research</p>
+        <ul>
+{rows}
+        </ul>
+      </div>"""
+
     basics = ""
     if BASICS.get(t["slug"]):
         rows = "\n".join(
@@ -1513,7 +1652,7 @@ def technique_page(t):
         on retreat, with people holding the room. Say the word and you will
         hear when the next one is on.</p>
         <a class="btn btn--primary"
-          href="{up}sessions.html?about=retreat">Tell me when the next one is</a>
+          href="{up}workshops.html?about=retreat">Tell me when the next one is</a>
       </div>"""
     else:
         next_step = f"""
@@ -1521,7 +1660,7 @@ def technique_page(t):
         <p class="label">If you want a hand with it</p>
         <p>This one works on your own. Some of it lands harder with someone
         in the room, and that is what the workshops are for.</p>
-        <a class="btn btn--primary" href="{up}sessions.html">Sessions</a>
+        <a class="btn btn--primary" href="{up}workshops.html">Workshops</a>
       </div>"""
 
     sib_block = ""
@@ -1584,7 +1723,7 @@ def technique_page(t):
         <ol class="steps">
 {steps}
         </ol>
-      </div>{note}{progression}{feels}{benefits}
+      </div>{note}{progression}{feels}{benefits}{science}
 {next_step}
     </div>
 {sib_block}
@@ -1965,24 +2104,27 @@ SESSION_WHY = """I know what it is to watch the life I spent decades building
           found myself in a spare bedroom, starting again from scratch, while
           the responsibility to work, provide, and keep going remained.</p>
 
-          <p class="why">I found breathwork through plant medicine. Plant
-          medicine saved me. Breathwork empowered me by showing me I could
+          <p class="why">I found plant medicine, and it saved me. Eventually
+          that led me to breathwork, which empowered me by showing me I could
           bring my body into a deep meditative state with nothing but my own
-          breath. It became a practice I could return to anywhere, even at
-          three in the morning when there was no one to call. When almost
-          everything else was gone, my breath was still mine. That is why I
-          teach it."""
+          breath.</p>
+
+          <p class="why">The rest came slowly. Eating clean. Time outside, in
+          the woods and around a fire. Breathing on purpose. I have felt the
+          pain, and I have felt the recovery that comes after it. I want to
+          help other men find their way through to the other side."""
 
 WORKSHOPS = [
     {
         "slug": "centering",
+        "image": ("assets/workshops/centering.jpg", "A handpan on a wooden deck with two mats laid out", "50% 62%"),
         "about": "centering",
         "name": "Centering",
         "technique": "Foundational breathwork",
         "head": "Nothing to believe in. It still works at 3am.",
         "lead": "You already breathe. This is just doing it on purpose.",
         "specs": [
-            ("Format", "1 hour. 8 to 25 people. Any time of day."),
+            ("Format", "1 hour. 4 to 15 people. Any time of day."),
             ("For", "Anyone. No experience or flexibility needed."),
             ("Flow", 'Handpan while people settle. <a href="relaxing/'
                      'foundational-breath.html">Foundational breath</a>, then '
@@ -1999,13 +2141,14 @@ WORKSHOPS = [
     },
     {
         "slug": "first-fire",
+        "image": ("assets/workshops/first-fire.jpg", "Two men lying on mats during a Dynamic breathwork round", "50% 72%"),
         "about": "first-fire",
         "name": "First Fire",
         "technique": "Dynamic breathwork",
         "head": "Yes, it is breathwork. No, nobody hugs you.",
         "lead": "Forty hard breaths and two holds. Then you find out.",
         "specs": [
-            ("Format", "1 hour. 8 to 20 people. Morning or afternoon."),
+            ("Format", "1 hour. 4 to 10 people. Morning or afternoon."),
             ("For", "Anyone cleared to hold their breath. No experience needed."),
             ("Flow", 'Handpan and resin while people settle. '
                      '<a href="relaxing/foundational-breath.html">Foundational '
@@ -2023,7 +2166,8 @@ WORKSHOPS = [
     },
     {
         "slug": "the-kiln",
-        # the freedom page already links sessions.html?about=retreat, so the
+        "image": ("assets/workshops/the-kiln.jpg", "A man sitting in an old bathtub filled with ice water under a tree", "62% 78%"),
+        # the freedom page already links workshops.html?about=retreat, so the
         # value stays "retreat" even though the label is now the workshop name
         "about": "retreat",
         "deep": True,
@@ -2033,20 +2177,23 @@ WORKSHOPS = [
         "lead": "The rest of the three and a half hours is arriving and "
                 "coming back.",
         "specs": [
-            ("Format", "3.5 hours. 6 to 15 people. Afternoon start."),
+            ("Format", "3.5 hours. 3 to 5 people. Afternoon or evening."),
             ("For", "Screened in advance. Intake form and waiver required."),
-            ("Flow", 'An hour to arrive and set intentions. Fifty five minutes '
-                     'of <a href="freedom/sonic-neural.html">Sonic Neural '
+            ("Flow", 'Arrive and set intentions. Fifty five minutes of <a '
+                     'href="freedom/sonic-neural.html">Sonic Neural '
                      'Breathwork</a>. Then a slow way back, food, and a share '
-                     'circle nobody has to speak in.'),
-            ("You provide", "A private room, low light, restrooms, floor space."),
+                     'circle around the fire that nobody has to speak in. At '
+                     'my place it opens with slow breathing and an ice plunge.'),
+            ("You provide", "A private room, low light, restrooms, floor "
+                            "space, and room outside for a fire."),
             ("I bring", "Sound system, tuning forks, handpan, resin, a second "
                         "space holder."),
         ],
         "pull": "Most people only need this once a year.",
         "safety": "Everyone completes an intake form and signs a waiver before "
                   "this one. Screening covers heart conditions, epilepsy, eye "
-                  "conditions, pregnancy, blood thinners and panic attacks.",
+                  "conditions, pregnancy, blood thinners, panic attacks and "
+                  "anything that rules out cold water.",
     },
 ]
 
@@ -2060,22 +2207,39 @@ SESSION_OPTIONS = [
 
 
 def workshop_block(w):
+    """One card per workshop, all three built the same way. Format becomes the
+    mono meta row under the heading; the rest of the specs sit in the right
+    column. The pull line stays in the data but is not rendered."""
+    fmt = dict(w["specs"]).get("Format", "")
+    meta = " <span class=\"dot\">&middot;</span> ".join(
+        f"<span>{x.strip()}</span>"
+        for x in fmt.rstrip(".").split(". ") if x.strip())
     specs = "\n".join(
-        f"          <dt>{k}</dt>\n          <dd>{v}</dd>"
-        for k, v in w["specs"]
+        f"            <dt>{k}</dt>\n            <dd>{v}</dd>"
+        for k, v in w["specs"] if k != "Format"
     )
-    deep = " offer--deep" if w.get("deep") else ""
-    return f"""      <article class="offer{deep}" id="{w['slug']}">
-        <p class="offer-name">{w['name']} <span class="dot">&middot;</span> {w['technique']}</p>
-        <h2>{w['head']}</h2>
-        <p class="offer-lead">{w['lead']}</p>
-        <dl class="offer-specs">
+    img = ""
+    if w.get("image"):
+        src, alt, pos = w["image"]
+        img = (f'\n        <img class="offer-img" src="{src}" alt="{alt}" '
+               f'width="1400" height="788" loading="lazy" '
+               f'style="object-position: {pos}">')
+    return f"""      <article class="offer" id="{w['slug']}">{img}
+        <div class="offer-main">
+          <p class="offer-name">{w['technique']}</p>
+          <h2>{w['name']}</h2>
+          <p class="offer-head">{w['head']}</p>
+          <p class="offer-lead">{w['lead']}</p>
+          <p class="offer-meta">{meta}</p>
+          <p class="offer-go"><a class="btn btn--secondary" href="#start"
+            data-about="{w['about']}">Ask about {w['name']}</a></p>
+        </div>
+        <div class="offer-detail">
+          <dl class="offer-specs">
 {specs}
-        </dl>
-        <p class="offer-pull">{w['pull']}</p>
-        <p class="offer-safety">{w['safety']}</p>
-        <p class="offer-go"><a class="btn btn--secondary" href="#start"
-          data-about="{w['about']}">Ask about {w['name']}</a></p>
+          </dl>
+          <p class="offer-safety">{w['safety']}</p>
+        </div>
       </article>"""
 
 
@@ -2087,7 +2251,7 @@ def sessions_page():
     )
     sessions_schema = [{
         "@type": "Service",
-        "@id": f"{SITE_URL}/sessions#service",
+        "@id": f"{SITE_URL}/workshops#service",
         "name": "Breathwork workshops and retreats",
         "serviceType": "Breathwork facilitation",
         "provider": {"@id": f"{SITE_URL}/#org"},
@@ -2095,7 +2259,7 @@ def sessions_page():
         "audience": {"@type": "Audience", "audienceType": "Men"},
         "hasOfferCatalog": {
             "@type": "OfferCatalog",
-            "name": "Sessions",
+            "name": "Workshops",
             "itemListElement": [
                 {"@type": "Offer", "itemOffered": {
                     "@type": "Service",
@@ -2104,28 +2268,28 @@ def sessions_page():
                 for w in WORKSHOPS
             ],
         },
-    }, crumbs([("Breath library", "index.html"), ("Sessions", "sessions.html")])]
+    }, crumbs([("Breath library", "index.html"), ("Workshops", "workshops.html")])]
     return f"""{head('Breathwork workshops for men - Clay & Air',
                      'Three breathwork workshops you can book for a gym, a '
                      'studio or a retreat. Two run an hour. The third runs '
                      'three and a half.',
-                     0, 'sessions.html', sessions_schema)}
-{header(0, 'sessions')}
+                     0, 'workshops.html', sessions_schema)}
+{header(0, 'workshops')}
 
 <main>
   <section class="technique">
     <div class="wrap">
       <div class="intake-open">
-          <p class="label">Sessions</p>
+          <p class="label">Workshops</p>
           <h1>This is the part I do in person.</h1>
           <p class="purpose">The library gives you practices you can use on
           your own. In person, I can see when you are forcing, holding back,
           or ready to go further. I guide the pace, help you stay with what
           comes up, and leave enough time for you to land before you walk back
           into your life. That is what a screen cannot do.</p>
-          <p class="purpose">Three workshops. Two run an hour and need nothing
-          but a room. The third takes an afternoon. All of them travel, so a
-          gym, a studio or a retreat can host one.</p>
+          <p class="purpose">Three workshops. Two run an hour. The third takes
+          an afternoon or an evening. I host any of them at my place, or I
+          bring one to yours: a gym, a studio, a farm, a retreat.</p>
           <p class="offer-go"><a class="btn btn--primary" href="#start">Start the conversation</a></p>
       </div>
 
@@ -2139,13 +2303,13 @@ def sessions_page():
     <div class="wrap">
       <div class="intake">
         <div class="intake-why">
-          <p class="label">Why I teach this</p>
+          <p class="label">Why breathe</p>
           <p class="why">{SESSION_WHY}</p>
           <p class="label label--gap">What happens next</p>
           <p class="why">I read every message myself and reply within a couple
-          of days. If you are asking about a date for your space, tell me
-          roughly how many people and what the room is like, and I will send
-          the run sheet back.</p>
+          of days. We settle the date, the place and who is coming, and I send
+          you what to expect and what to bring. For The Kiln, the intake form
+          and waiver come first.</p>
         </div>
 
         <div class="form-card">
@@ -2157,10 +2321,10 @@ def sessions_page():
               <label>Leave this empty <input name="bot-field"></label>
             </p>
 
-            <p class="label">Start here</p>
-            <p class="small muted">Tell me what you are
-              looking for and what has been going on. Plain words are enough.
-              I read every message myself.</p>
+            <p class="label">Book a workshop</p>
+            <p class="small muted">Tell me which workshop, roughly
+              when, and where. Plain words are enough. I read every message
+              myself.</p>
 
             <div class="field">
               <label for="f-name">Name</label>
@@ -2174,15 +2338,16 @@ def sessions_page():
             </div>
 
             <div class="field">
-              <label for="f-about">What you are after</label>
+              <label for="f-about">Which workshop</label>
               <select id="f-about" name="about">
 {options}
               </select>
             </div>
 
             <div class="field">
-              <label for="f-notes">Tell me what has been going on</label>
-              <textarea id="f-notes" name="notes"></textarea>
+              <label for="f-notes">When, where and how many</label>
+              <textarea id="f-notes" name="notes"
+                placeholder="A rough date, how many people, and the space you have in mind."></textarea>
             </div>
 
             <label class="check">
@@ -2369,6 +2534,9 @@ def redirects_txt():
     lines = ["# Source is in git, not on the web. The ! forces the rule to win",
              "# over the real file that is sitting there.", ""]
     lines += [f"{p}  /404.html  404!" for p in hidden]
+    lines += ["", "# Sessions was renamed Workshops.",
+              "/sessions.html  /workshops.html  301",
+              "/sessions  /workshops  301"]
     lines.append("")
     return "\n".join(lines)
 
@@ -2400,7 +2568,7 @@ def sitemap_xml(paths):
         if p == "thanks.html":
             continue                      # a form receipt is not a landing page
         pri = "1.0" if p == "index.html" else (
-            "0.9" if p in ("sessions.html",) or p.endswith("/index.html") else "0.8")
+            "0.9" if p in ("workshops.html",) or p.endswith("/index.html") else "0.8")
         rows.append(f"  <url>\n    <loc>{canonical(p)}</loc>\n"
                     f"    <lastmod>{today}</lastmod>\n"
                     f"    <priority>{pri}</priority>\n  </url>")
@@ -2443,7 +2611,7 @@ def llms_txt():
         out += [f"- {n}: {u}" for n, u in SOCIALS]
         out.append("")
     out += ["## Working with Clay & Air", "",
-            f"- [Sessions]({canonical('sessions.html')}): three bookable "
+            f"- [Workshops]({canonical('workshops.html')}): three bookable "
             "workshops. Centering and First Fire run an hour; The Kiln is a "
             "three and a half hour Sonic Neural session. Contact form on the "
             "page.", "",
@@ -2465,9 +2633,9 @@ def write(path, content):
 
 
 if __name__ == "__main__":
-    paths = ["index.html", "sessions.html", "thanks.html"]
+    paths = ["index.html", "workshops.html", "thanks.html"]
     write("index.html", index_page())
-    write("sessions.html", sessions_page())
+    write("workshops.html", sessions_page())
     write("thanks.html", thanks_page())
     for pillar in PILLARS:
         write(f"{pillar}/index.html", pillar_page(pillar))

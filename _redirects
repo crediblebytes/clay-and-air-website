@@ -3,3 +3,7 @@
 
 /_dev/*  /404.html  404!
 /README.md  /404.html  404!
+
+# Sessions was renamed Workshops.
+/sessions.html  /workshops.html  301
+/sessions  /workshops  301

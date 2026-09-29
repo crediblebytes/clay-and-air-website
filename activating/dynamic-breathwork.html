@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;600&amp;family=IBM+Plex+Sans:wght@400;500&amp;family=IBM+Plex+Mono:wght@500&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/breath.css">
+  <link rel="stylesheet" href="../assets/breath.css?v=b9c2bb10">
   <!-- Privacy-friendly analytics by Plausible -->
   <script async src="https://plausible.io/js/pa-VSqWa9Bp7sjkwzZ91EFkO.js"></script>
   <script>
@@ -47,12 +47,31 @@
     </a>
     <nav class="site-nav">
       <a href="../index.html">Library</a>
-      <a href="../relaxing/index.html">Relaxing</a>
-      <a href="../activating/index.html" aria-current="page">Activating</a>
-      <a href="../freedom/index.html">Freedom</a>
-      <a href="../sessions.html">Sessions</a>
+      <details class="nav-group">
+        <summary class="is-current">Pillars</summary>
+        <div class="nav-menu">
+          <a href="../relaxing/index.html">Relaxing</a>
+          <a href="../activating/index.html" aria-current="page">Activating</a>
+          <a href="../freedom/index.html">Freedom</a>
+        </div>
+      </details>
+      <a href="../workshops.html">Workshops</a>
     </nav>
   </div>
+  <script>
+    document.addEventListener("click", function (e) {
+      document.querySelectorAll("details.nav-group[open]").forEach(function (d) {
+        if (!d.contains(e.target)) d.removeAttribute("open");
+      });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      document.querySelectorAll("details.nav-group[open]").forEach(function (d) {
+        d.removeAttribute("open");
+        d.querySelector("summary").focus();
+      });
+    });
+  </script>
 </header>
 
 <main>
@@ -151,12 +170,45 @@
           <li>Boosts immunity and brings inflammation down</li>
         </ul>
       </div>
+      <section class="basics">
+        <p class="label">The science</p>
+        <p class="basics-intro">Every part of the round does a bit of everything. Each step also has one job it does best, and that is the easiest way to remember it.</p>
+        <div class="basics-list">
+          <div class="basic">
+            <p class="label">The forty breaths: inflammation</p>
+            <p>Fast, full breathing blows off carbon dioxide. CO2 is what keeps your blood slightly acidic, so as it drops your blood pH rises for a while. That shift is the tingling in your hands and face, and it settles within minutes of breathing normally again. In an eight week trial, people with an inflammatory arthritis of the spine who added this style of breathing, cold exposure and meditation saw their inflammation markers and disease activity come down. The group that did not train saw no change.</p>
+          </div>
+          <div class="basic">
+            <p class="label">The empty hold: immunity</p>
+            <p>Holding on empty is a deliberate dose of stress, and your body answers with a surge of adrenaline. That is the hormesis you feel as the nervous wave. In a 2014 study, researchers gave men a piece of E. coli bacteria that brings on fever, chills and headache for a few hours. The men trained in this breathing had more adrenaline, more of the body's own anti-inflammatory signal, less of the inflammatory ones, and far fewer flu symptoms than the men who were not. Their immune systems still answered. They just answered cleaner.</p>
+          </div>
+          <div class="basic">
+            <p class="label">The full hold: lung capacity</p>
+            <p>Your lungs peak in your mid twenties. After about 35 they lose a little every year: the diaphragm weakens, the lung tissue loses its stretch and the rib cage stiffens. The big breath and the sip on top take the lungs and ribs to the end of their range every round. That matters because the Framingham Heart Study, which has followed thousands of people since 1948, found that lower vital capacity, the most air you can move in one breath, predicted heart disease and an earlier death.</p>
+          </div>
+          <div class="basic">
+            <p class="label">The Om: the nervous system</p>
+            <p>The vagus nerve runs from the brainstem to the heart, the lungs and the gut, and it is the main line of the rest and digest side of your nervous system. A long, slow exhale works it, and humming carries vibration through the throat and ears where its branches run. In a small brain scan study, chanting Om quieted the same regions that electrical vagus nerve stimulation does. It is why the round leaves you calm and clear rather than wired.</p>
+          </div>
+        </div>
+      </section>
+      <div class="benefits">
+        <p class="label">Read the research</p>
+        <ul>
+          <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4034215/" rel="noopener">The immune study: Kox and others, PNAS, 2014</a></li>
+          <li><a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0225749" rel="noopener">The inflammation trial: Buijze and others, PLOS ONE, 2019</a></li>
+          <li><a href="https://www.sciencedirect.com/science/article/abs/pii/000287038390532X" rel="noopener">Vital capacity in the Framingham study: Kannel and Hubert, 1983</a></li>
+          <li><a href="https://www.lung.org/lung-health-diseases/how-lungs-work/lung-capacity-and-aging" rel="noopener">Lung capacity and aging: American Lung Association</a></li>
+          <li><a href="https://pubmed.ncbi.nlm.nih.gov/21654968/" rel="noopener">Om chanting and the brain: Kalyani and others, 2011</a></li>
+          <li><a href="https://my.clevelandclinic.org/health/body/22279-vagus-nerve" rel="noopener">The vagus nerve: Cleveland Clinic</a></li>
+        </ul>
+      </div>
 
       <div class="next-step">
         <p class="label">If you want a hand with it</p>
         <p>This one works on your own. Some of it lands harder with someone
         in the room, and that is what the workshops are for.</p>
-        <a class="btn btn--primary" href="../sessions.html">Sessions</a>
+        <a class="btn btn--primary" href="../workshops.html">Workshops</a>
       </div>
     </div>
 
@@ -279,8 +331,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="disclaimer">Techniques taught by Ben Holt. If you have a heart or
-      lung condition, high or low blood pressure, epilepsy, or you are pregnant,
+      <p class="disclaimer">If you have a heart or lung condition, high or low blood pressure, epilepsy, or you are pregnant,
       talk to a doctor before holding your breath.</p>
       <span class="copyright">&copy; 2026 Clay &amp; Air</span>
     </div>

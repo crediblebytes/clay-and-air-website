@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;600&amp;family=IBM+Plex+Sans:wght@400;500&amp;family=IBM+Plex+Mono:wght@500&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/breath.css">
+  <link rel="stylesheet" href="../assets/breath.css?v=b9c2bb10">
   <!-- Privacy-friendly analytics by Plausible -->
   <script async src="https://plausible.io/js/pa-VSqWa9Bp7sjkwzZ91EFkO.js"></script>
   <script>
@@ -47,12 +47,31 @@
     </a>
     <nav class="site-nav">
       <a href="../index.html">Library</a>
-      <a href="../relaxing/index.html">Relaxing</a>
-      <a href="../activating/index.html" aria-current="page">Activating</a>
-      <a href="../freedom/index.html">Freedom</a>
-      <a href="../sessions.html">Sessions</a>
+      <details class="nav-group">
+        <summary class="is-current">Pillars</summary>
+        <div class="nav-menu">
+          <a href="../relaxing/index.html">Relaxing</a>
+          <a href="../activating/index.html" aria-current="page">Activating</a>
+          <a href="../freedom/index.html">Freedom</a>
+        </div>
+      </details>
+      <a href="../workshops.html">Workshops</a>
     </nav>
   </div>
+  <script>
+    document.addEventListener("click", function (e) {
+      document.querySelectorAll("details.nav-group[open]").forEach(function (d) {
+        if (!d.contains(e.target)) d.removeAttribute("open");
+      });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      document.querySelectorAll("details.nav-group[open]").forEach(function (d) {
+        d.removeAttribute("open");
+        d.querySelector("summary").focus();
+      });
+    });
+  </script>
 </header>
 
 <main>
@@ -113,7 +132,7 @@
         <p class="label">If you want a hand with it</p>
         <p>This one works on your own. Some of it lands harder with someone
         in the room, and that is what the workshops are for.</p>
-        <a class="btn btn--primary" href="../sessions.html">Sessions</a>
+        <a class="btn btn--primary" href="../workshops.html">Workshops</a>
       </div>
     </div>
 
@@ -236,8 +255,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="disclaimer">Techniques taught by Ben Holt. If you have a heart or
-      lung condition, high or low blood pressure, epilepsy, or you are pregnant,
+      <p class="disclaimer">If you have a heart or lung condition, high or low blood pressure, epilepsy, or you are pregnant,
       talk to a doctor before holding your breath.</p>
       <span class="copyright">&copy; 2026 Clay &amp; Air</span>
     </div>

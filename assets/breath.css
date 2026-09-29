@@ -120,6 +120,61 @@ p:last-child { margin-bottom: 0; }
   border-bottom-color: var(--border-accent);
 }
 
+/* Pillars: the three pillar pages grouped under one nav item. A <details>
+   so it opens on tap as well as click, with no framework. */
+.nav-group { position: relative; }
+.nav-group summary {
+  list-style: none;
+  cursor: pointer;
+  font: var(--weight-medium) var(--size-label) / 1 var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border-bottom: var(--hairline) solid transparent;
+  padding-bottom: 3px;
+  transition: var(--transition-color);
+  white-space: nowrap;
+  position: relative;
+}
+.nav-group summary::-webkit-details-marker { display: none; }
+.nav-group summary::after { content: ""; position: absolute; inset: -14px 0; }
+.nav-group summary::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-right: var(--hairline) solid currentColor;
+  border-bottom: var(--hairline) solid currentColor;
+  transform: rotate(45deg);
+  float: right;
+  margin: 1px 0 0 8px;
+}
+.nav-group[open] summary::before { transform: rotate(-135deg); margin-top: 4px; }
+.nav-group summary:hover,
+.nav-group[open] summary { color: var(--soot); }
+.nav-group summary.is-current { color: var(--soot); border-bottom-color: var(--border-accent); }
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 18px);
+  left: -20px;
+  z-index: 11;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  padding: var(--space-2) 20px;
+}
+.site-nav .nav-menu a {
+  display: block;
+  padding: 14px 0 11px;
+  border-bottom: var(--hairline) solid var(--border-hairline);
+}
+.site-nav .nav-menu a:last-child { border-bottom: 0; }
+.site-nav .nav-menu a::after { display: none; }
+.site-nav .nav-menu a[aria-current="page"] { color: var(--text-accent); }
+
 /* ---------- pills (Protocols.jsx) ---------- */
 
 .pills { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-6); }
@@ -617,86 +672,115 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
   .form-card { padding: var(--space-6); }
 }
 
-/* ---------- the offer ladder on /sessions ----------
-   One block per workshop, mirroring its print one-sheet: a mono name line
-   pairing the pottery name with the technique, the hook as the heading, then
-   the specs as a definition list so the labels stay scannable. The Kiln gets
-   the soot name bar so the deep offer does not look like the free one. */
+/* ---------- the offer ladder on /workshops ----------
+   One card per workshop, built the same way every time, so each has a clear
+   edge. Left: the name, the heading, the lead, the format as a mono meta row,
+   and the button. Right: the specs and the safety line. Stacks on a phone. */
 
-.offers { display: grid; gap: var(--space-9); margin-top: var(--space-8); }
-.offer { border-top: var(--hairline) solid var(--border-hairline); padding-top: var(--space-6); }
+.offers { display: grid; gap: var(--space-6); margin-top: var(--space-8); }
+.offer {
+  background: var(--surface-card);
+  border: var(--hairline) solid var(--border-hairline);
+  border-radius: var(--radius);
+  padding: var(--card-padding);
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: var(--space-8);
+}
+/* the photo runs edge to edge across the top of the card */
+.offer-img {
+  grid-column: 1 / -1;
+  display: block;
+  width: calc(100% + 2 * var(--card-padding));
+  height: auto;
+  aspect-ratio: 5 / 2;
+  object-fit: cover;
+  margin: calc(var(--card-padding) * -1) calc(var(--card-padding) * -1) 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  border-bottom: var(--hairline) solid var(--border-hairline);
+}
 .offer-name {
   font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--text-accent);
   margin: 0 0 var(--eyebrow-gap);
-  display: block;
 }
-.offer--deep .offer-name {
-  background: var(--surface-anchor);
-  color: var(--text-inverse);
-  padding: var(--space-2) var(--space-3);
-  margin-bottom: var(--space-4);
-}
+/* the workshop name is the title; the line under it is the hook */
 .offer h2 {
   font: var(--weight-display) var(--size-h2) / var(--lh-h2) var(--font-display);
   letter-spacing: var(--tracking-tight);
+  color: var(--text-body);
   margin: 0 0 var(--space-4);
-  max-width: var(--measure-prose);
+}
+.offer-head {
+  font: var(--weight-display) var(--size-body-lg) / var(--lh-body-lg) var(--font-display);
+  color: var(--text-body);
+  margin: 0 0 var(--space-2);
 }
 .offer-lead {
-  font-size: var(--size-body-lg);
-  line-height: var(--lh-body-lg);
+  font-size: var(--size-body);
+  line-height: var(--lh-body);
   color: var(--text-secondary);
-  max-width: var(--measure-prose);
-  margin: 0 0 var(--space-6);
+  margin: 0 0 var(--space-5);
 }
+.offer-meta {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-body);
+  padding: var(--space-3) 0;
+  border-top: var(--hairline) solid var(--border-hairline);
+  border-bottom: var(--hairline) solid var(--border-hairline);
+  margin: 0;
+}
+.offer-meta .dot { color: var(--text-tertiary); padding: 0 4px; }
+.offer-meta span:not(.dot) { white-space: nowrap; }
 .offer-specs {
   display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
-  margin: 0 0 var(--space-6);
-  border-top: var(--hairline) solid var(--border-hairline);
+  grid-template-columns: 130px minmax(0, 1fr);
+  margin: 0 0 var(--space-4);
 }
 .offer-specs dt {
   font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--text-tertiary);
-  padding: var(--space-4) 0;
+  padding: var(--space-3) 0;
   border-bottom: var(--hairline) solid var(--border-hairline);
 }
 .offer-specs dd {
   margin: 0;
-  padding: var(--space-4) 0;
+  padding: var(--space-3) 0;
   color: var(--text-secondary);
-  font-size: var(--size-body);
+  font-size: var(--size-small);
+  line-height: var(--lh-small);
   border-bottom: var(--hairline) solid var(--border-hairline);
 }
-/* the turn, not a fifth paragraph: the accent rule and the air around it are
-   what make it read as a change of voice */
-.offer-pull {
-  border-left: var(--rule-accent-width) solid var(--border-accent);
-  padding-left: var(--space-5);
-  font: var(--weight-display) var(--size-h3) / var(--lh-h3) var(--font-display);
-  color: var(--text-body);
-  margin: 0 0 var(--space-6);
-  max-width: var(--measure-prose);
-}
+.offer-specs dt:last-of-type,
+.offer-specs dd:last-of-type { border-bottom: 0; }
 .offer-safety {
   font-size: var(--size-small);
   line-height: var(--lh-small);
   color: var(--text-tertiary);
-  max-width: var(--measure-prose);
-  margin: 0 0 var(--space-6);
+  margin: 0;
 }
 .offer-go { margin: var(--space-6) 0 0; }
 .intake-why .why + .why { margin-top: var(--space-4); }
 
+/* stacked, the button goes to the bottom of the card, after the details */
+@media (max-width: 800px) {
+  .offer { display: flex; flex-direction: column; gap: 0; }
+  .offer-img { aspect-ratio: 3 / 2; margin-bottom: var(--space-6); }
+  .offer-main { display: contents; }
+  .offer-detail { order: 1; margin-top: var(--space-5); }
+  .offer-go { order: 2; }
+}
 @media (max-width: 700px) {
   .offer-specs { grid-template-columns: 1fr; }
-  .offer-specs dt { padding: var(--space-4) 0 0; border-bottom: 0; }
-  .offer-specs dd { padding-top: var(--space-2); }
+  .offer-specs dt { padding: var(--space-3) 0 0; border-bottom: 0; }
+  .offer-specs dd { padding-top: var(--space-1); }
+  .offer-specs dt:last-of-type { border-bottom: 0; }
 }
 
 /* ---------- flashcard faces ----------
