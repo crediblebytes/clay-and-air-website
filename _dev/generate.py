@@ -707,7 +707,8 @@ TECHNIQUES = [
                  "neither: a wide clear view of your own life from somewhere "
                  "above it. There is no goal here and no way to do it wrong.",
         "note3": "Integrate afterwards. Water, bare feet on the ground, food, "
-                 "time away from a screen, and no rushing back to work.",
+                 "time away from a screen, and no rushing back to work. More "
+                 'in <a href="../integration.html">the days after</a>.',
         "meta": ["About 2.5 hours", "Lying down", "Nose in, then mouth"],
         "sideways": "If it tips into panic, this is a roller coaster you can "
                     "get off. Slow the breath down and take it through the "
@@ -1370,6 +1371,15 @@ def footer(depth):
         </ul>
       </div>
       <div class="footer-col">
+        <p class="label label--tertiary">Workshops</p>
+        <ul>
+          <li><a href="{up}workshops.html">Workshops</a></li>
+          <li><a href="{up}kiln.html">Before The Kiln</a></li>
+          <li><a href="{up}intake.html">The Kiln intake</a></li>
+          <li><a href="{up}integration.html">After a ceremony</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
         <p class="label label--tertiary">Source</p>
         <ul>
           <li><a href="https://www.awakenedbreath.org/" rel="noopener">Ben Holt</a></li>
@@ -1651,9 +1661,13 @@ def technique_page(t):
         <p class="label">Sitting one of these</p>
         <p>This one is not a solo practice. It runs at the long workshop and
         on retreat, with people holding the room. Say the word and you will
-        hear when the next one is on.</p>
-        <a class="btn btn--primary"
-          href="{up}workshops.html?about=retreat">Tell me when the next one is</a>
+        hear when the next one is on. Already booked? The intake comes
+        next.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary"
+            href="{up}workshops.html?about=retreat">Tell me when the next one is</a>
+          <a class="btn btn--secondary" href="{up}kiln.html">Before The Kiln</a>
+        </div>
       </div>"""
     else:
         next_step = f"""
@@ -2171,6 +2185,7 @@ WORKSHOPS = [
         # the freedom page already links workshops.html?about=retreat, so the
         # value stays "retreat" even though the label is now the workshop name
         "about": "retreat",
+        "intake": True,
         "deep": True,
         "name": "The Kiln",
         "technique": "Sonic Neural Breathwork",
@@ -2179,7 +2194,8 @@ WORKSHOPS = [
                 "coming back.",
         "specs": [
             ("Format", "3.5 hours. 3 to 5 people. Afternoon or evening."),
-            ("For", "Screened in advance. Intake form and waiver required."),
+            ("For", 'Screened in advance. <a href="intake.html">Intake form '
+                    'and waiver</a> required.'),
             ("Flow", 'Arrive and set intentions. Fifty five minutes of <a '
                      'href="freedom/sonic-neural.html">Sonic Neural '
                      'Breathwork</a>. Then a slow way back, food, and a share '
@@ -2219,6 +2235,10 @@ def workshop_block(w):
         f"            <dt>{k}</dt>\n            <dd>{v}</dd>"
         for k, v in w["specs"] if k != "Format"
     )
+    intake = ""
+    if w.get("intake"):
+        intake = ('\n            <a class="btn btn--secondary" '
+                  'href="kiln.html">Before The Kiln</a>')
     img = ""
     if w.get("image"):
         src, alt, pos = w["image"]
@@ -2232,8 +2252,8 @@ def workshop_block(w):
           <p class="offer-head">{w['head']}</p>
           <p class="offer-lead">{w['lead']}</p>
           <p class="offer-meta">{meta}</p>
-          <p class="offer-go"><a class="btn btn--secondary" href="#start"
-            data-about="{w['about']}">Ask about {w['name']}</a></p>
+          <p class="offer-go btn-row"><a class="btn btn--secondary" href="#start"
+            data-about="{w['about']}">Ask about {w['name']}</a>{intake}</p>
         </div>
         <div class="offer-detail">
           <dl class="offer-specs">
@@ -2309,8 +2329,8 @@ def sessions_page():
           <p class="label label--gap">What happens next</p>
           <p class="why">I read every message myself and reply within a couple
           of days. We settle the date, the place and who is coming, and I send
-          you what to expect and what to bring. For The Kiln, the intake form
-          and waiver come first.</p>
+          you what to expect and what to bring. For The Kiln, the <a
+          href="intake.html">intake form and waiver</a> come first.</p>
         </div>
 
         <div class="form-card">
@@ -2537,6 +2557,863 @@ def thanks_page():
 {footer(0)}"""
 
 
+# ---------------------------------------------------------------------------
+# The Kiln. Two pages. Before The Kiln (kiln.html) is the three steps in the
+# order they have to happen: watch Ben explain Sonic Neural, read how to come
+# in ready, then go to the form. The form (intake.html) is the intake and the
+# waiver together, sent with one submit. The
+# intake asks only what screening needs; the rest is asked in person. Adapted from the Healing Service Ceremony Intake and
+# Liability form. It posts to Netlify Forms like the workshops form, so a
+# submission arrives by email.
+#
+# Netlify keeps only the last value when several inputs share a name, in the
+# dashboard and in the notification email, so every checkbox has a name of
+# its own. Do not collapse them back into one name.
+# ---------------------------------------------------------------------------
+
+# Who the agreement is with. If Clay & Air becomes an LLC, change both lines.
+PRACTITIONER = "Don Page, doing business as Clay &amp; Air"
+RELEASED = "DON PAGE AND CLAY &amp; AIR"
+# Change this whenever the agreement wording changes. It travels with every
+# submission, so each signed form records which version was signed.
+AGREEMENT_VERSION = "2026-10-29"
+
+KILN_VIDEO = BY_SLUG["sonic-neural"]["videos"][0][2]   # Ben's explanation
+
+KILN_READY = [
+    ("What to bring", "A water bottle, a pillow, a blanket, an eye mask, and "
+     "lip balm, because the breathing dries your mouth out. If we are at my "
+     "place, bring something to wear in the ice plunge and a towel."),
+    ("Come clear", "No alcohol or drugs beforehand. I want you to have the "
+     "real experience, with nothing in your system but you. Keep taking "
+     "anything you are prescribed, and list it on the form."),
+    ("Eat early", "Nothing to eat for at least 90 minutes before. Three hours "
+     "is better. The breathing is easier on an empty stomach."),
+    ("Bring an intention", "Something you want to let go of, or something you "
+     "want to bring in. It does not have to be big. It gives the session a "
+     "direction."),
+    ("Afterwards", "A slow way back, food, and a share circle around the "
+     "fire. Nobody has to speak. Leave the rest of the day open, and read <a "
+     'href="integration.html">the days after</a> when you get home.'),
+    ("Questions", "Ask me anything before you come. Reply to any email from "
+     "me and it comes straight to me."),
+]
+
+CONDITIONS = [
+    ("pregnancy", "Pregnancy, or trying to conceive"),
+    ("heart", "Heart disease, angina, a past heart attack, arrhythmia, a "
+              "pacemaker, or a past stroke or TIA"),
+    ("high_bp", "High or uncontrolled blood pressure"),
+    ("low_bp", "Very low blood pressure, or fainting easily"),
+    ("aneurysm", "Aneurysm, your own or in your immediate family"),
+    ("seizure", "Epilepsy, a seizure disorder, or a history of seizures"),
+    ("eye", "Glaucoma, a detached retina, or another serious eye condition"),
+    ("asthma", "Asthma or another serious breathing condition. Bring your "
+               "inhaler"),
+    ("bone", "Osteoporosis or serious bone density loss"),
+    ("injury", "Recent surgery, a recent injury, or any acute physical "
+               "condition"),
+    ("diabetes", "Diabetes, especially if you take insulin"),
+    ("migraine", "Severe or uncontrolled migraines"),
+    ("blood_thinners", "Prescription blood thinners"),
+    ("cold", "Raynaud's, or anything else that rules out cold water"),
+    ("psychosis", "Schizophrenia, schizoaffective disorder, bipolar disorder, "
+                  "psychosis or a past psychotic episode, or a family history "
+                  "of any of these"),
+    ("suicide", "Active thoughts of suicide, a recent suicide attempt, or a "
+                "recent stay in a psychiatric hospital"),
+    ("ptsd", "Severe or complex PTSD, or a dissociative disorder"),
+    ("panic", "A history of severe panic attacks"),
+    ("depression", "Severe depression or severe anxiety right now"),
+    ("substance", "A substance use disorder right now, or recent withdrawal"),
+    ("psych_meds", "Antipsychotics, mood stabilizers, lithium, MAOIs, "
+                   "benzodiazepines, or other psychoactive medication"),
+    ("other", "Any other condition that intense breathing, physical effort, "
+              "altered states or emotional release could affect. Tell me "
+              "about it below"),
+    ("none", "None of the above"),
+]
+
+SUBSTANCES = [
+    ("beer_wine", "Beer or wine"),
+    ("liquor", "Hard liquor"),
+    ("energy", "Energy drinks, like Red Bull, Monster or Celsius"),
+    ("nicotine", "Nicotine, smoked, vaped or chewed"),
+    ("cannabis", "Cannabis"),
+    ("stimulants", "Stimulants not prescribed to you, like Adderall or "
+                   "Ritalin"),
+    ("cocaine", "Cocaine"),
+    ("heroin", "Heroin"),
+    ("opioids", "Opioids not prescribed to you, like oxycodone, fentanyl or "
+                "morphine"),
+    ("meth", "Methamphetamine"),
+    ("ghb", "GHB"),
+    ("ketamine", "Ketamine not prescribed to you"),
+    ("mdma", "MDMA"),
+    ("psychedelics", "Psychedelics or plant medicine"),
+    ("private", "I would rather tell you in person"),
+    ("none", "None of the above"),
+]
+
+# The agreement. Each entry is (key, title, body). A body item is a paragraph,
+# ("caps", text) for the parts that have to stand out, or ("ul", [items]).
+AGREEMENT = [
+    ("parties", "Parties and scope", [
+        f'This Agreement is between {PRACTITIONER}, called "Practitioner" '
+        'here, and the participant signing it, called "Participant," "I" or '
+        '"me."',
+        "It applies to every workshop, ceremony, retreat, session and related "
+        'activity Practitioner offers, together called the "Services," '
+        "whether at Practitioner's home, at a host venue, or outdoors.",
+        "It stays in effect for all Services from the date I sign it, not "
+        "only a single session, until I revoke it in writing.",
+    ]),
+    ("services", "Description of services", [
+        "I understand that Practitioner offers some or all of the following, "
+        "and that one session may combine several of them:",
+        ("ul", [
+            "<strong>Breathwork.</strong> Slow, relaxing breathing; Dynamic "
+            "Breathwork, which is rapid breathing with breath holds; and "
+            "Sonic Neural Breathwork, which is sustained, connected breathing "
+            "done lying down with the eyes covered, to music, for about "
+            "fifty five minutes, with the express intention of bringing on "
+            "a non-ordinary state of consciousness. Breathwork may include "
+            "movement, shaking, vocalizing and emotional release.",
+            "<strong>Sound.</strong> Recorded music played through a sound "
+            "system, tuning forks and handpan.",
+            "<strong>Ceremony.</strong> Setting intentions, burning resins "
+            "such as frankincense, myrrh and dragon's blood, an open fire, "
+            "and a share circle.",
+            "<strong>Cold water immersion.</strong> An ice plunge, when the "
+            "session is held at Practitioner's home.",
+            "<strong>Supportive touch</strong>, only as I consent to it in "
+            "this form.",
+        ]),
+        "<strong>No controlled, psychoactive or plant substances.</strong> "
+        "Practitioner does not give, supply, source, recommend, prepare or "
+        "supervise the use of any controlled substance, psychedelic, plant "
+        "medicine or other psychoactive substance in connection with the "
+        "Services. Any non-ordinary state referred to in this Agreement "
+        "comes from breath, sound, movement and attention alone. If I use "
+        "any such substance before or during a session, I do so entirely on "
+        "my own, against Practitioner's instruction, and I may be removed "
+        "from the session without a refund.",
+        "<strong>No medical, psychological or other licensed "
+        "services.</strong> See Section 3.",
+    ]),
+    ("scope", "Non-medical nature of the services", [
+        "I understand and agree that:",
+        ("ul", [
+            "Practitioner is not a physician, nurse, physician assistant, "
+            "psychologist, psychiatrist, licensed psychotherapist, licensed "
+            "counselor, social worker, physical therapist, dietitian or any "
+            "other licensed healthcare provider, and is not acting as one.",
+            "The Services are not medical care, mental health treatment, "
+            "psychotherapy, trauma therapy, crisis intervention, diagnosis, "
+            "or a cure for any condition, and they are not a substitute for "
+            "any of these.",
+            "Practitioner does not diagnose any physical, mental, emotional "
+            "or spiritual condition, does not prescribe, and does not treat "
+            "disease.",
+            "Nothing Practitioner says is advice to start, stop, reduce, "
+            "delay or change any medication, therapy, treatment plan or "
+            "relationship with a licensed provider. <strong>Any such "
+            "decision is mine to make with my prescribing or treating "
+            "provider.</strong>",
+            "The Services are offered for general wellbeing, self-inquiry, "
+            "education, relaxation, and personal and spiritual exploration.",
+            'Words used in this practice, including "healing," "energy," '
+            '"release," "trauma" and "ceremony," are used within the '
+            "tradition. <strong>They are not scientific or medical claims, "
+            "and Practitioner makes no promise or guarantee of any particular "
+            "outcome, benefit, improvement or result.</strong>",
+            "Practitioner does not provide emergency or crisis services and "
+            "is not available on call.",
+        ]),
+    ]),
+    ("disclosure", "Participant representations and health disclosure", [
+        "I represent that:",
+        ("ul", [
+            "I am 18 or older and of sound mind.",
+            "I am taking part <strong>voluntarily</strong>, of my own free "
+            "will, and not under pressure, a court order, or the direction "
+            "of an employer or anyone else.",
+            "I have answered the health questions in this form truthfully "
+            "and completely, and I have disclosed every condition in Section "
+            "6 that applies to me.",
+            "I have been advised to talk to my doctor, and where relevant my "
+            "mental health provider, before taking part. I have either done "
+            "so or chosen not to, and I accept full responsibility for that "
+            "choice.",
+            "I will not be under the influence of alcohol, cannabis or any "
+            "drug not prescribed to me, or impaired by any prescribed "
+            "medication, at any session.",
+            "<strong>I will tell Practitioner promptly of any change in my "
+            "physical health, mental health, medication, pregnancy or "
+            "injury</strong> after I sign this Agreement. I understand that "
+            "leaving out or misstating health information can increase my "
+            "risk of harm, and I accept that risk.",
+        ]),
+    ]),
+    ("risks", "Acknowledgment of risks", [
+        "I understand that taking part carries <strong>inherent and "
+        "foreseeable risks, as well as risks that cannot be fully "
+        "anticipated or eliminated</strong>, and that these risks can result "
+        "in <strong>minor injury, serious injury, permanent disability, "
+        "psychological harm or death</strong>. I have read the risks below "
+        "and I accept them.",
+        "<strong>Physical practice.</strong> Muscle strain, sprains, and "
+        "joint, back or neck injury; dizziness, fainting and nausea; "
+        "overheating and dehydration; cardiovascular events, including "
+        "raised blood pressure, arrhythmia, cardiac event or stroke; "
+        "aggravation of any existing condition, injury or surgical repair; "
+        "injury from fatigue, distraction or going past my own limits; and "
+        "injury from equipment, flooring, other participants or the venue.",
+        "<strong>Breathwork.</strong> Sustained fast breathing changes the "
+        "level of carbon dioxide in the blood and can have marked physical "
+        "and psychological effects. These include hyperventilation and "
+        "hypocapnia; dizziness, lightheadedness and headache; "
+        "<strong>tetany and carpopedal spasm</strong>, which is involuntary "
+        "cramping and clawing of the hands, feet, arms and face that can be "
+        "intense and can last for a while after the breathing slows; "
+        "tingling, numbness and temperature changes in the hands and feet; "
+        "fainting, loss of consciousness and injury from falling; nausea and "
+        "vomiting; significant changes in heart rate and blood pressure; "
+        "seizure in people prone to them; chest pain and difficulty "
+        "breathing; increased pressure in the head, eyes and chest; risk to "
+        "a pregnancy, including to the baby; strong emotional release, "
+        "including uncontrollable crying, shaking, screaming, rage, grief, "
+        "terror and involuntary movement; <strong>the sudden return of "
+        "traumatic, repressed or forgotten memories, which may be "
+        "distressing and may stay distressing after the session "
+        "ends</strong>; non-ordinary states of consciousness, including "
+        "changes in perception, vision, hearing and sense of time, "
+        "depersonalization, derealization and ego dissolution; "
+        "<strong>psychological destabilization, including disorientation, "
+        "panic, prolonged anxiety, a depressive episode, insomnia, "
+        "dissociation, intrusive images, mania or a psychotic "
+        "episode</strong>, during the session, in the hours or days after, "
+        "or later; and the possibility that memories or impressions arising "
+        "in a non-ordinary state feel vivid and true but are not "
+        "historically accurate.",
+        "<strong>Ceremony, sound and fire.</strong> Emotional and "
+        "psychological material surfacing; disorientation and an altered "
+        "sense of time; distressing imagery; reactions to sustained loud "
+        "music or sound, including headache, nausea or, in people prone to "
+        "them, seizure; reactions to resin smoke, including breathing "
+        "irritation and asthma flare ups; burns from an open fire; spiritual "
+        "or existential distress; and conflict between the practice and my "
+        "own religious, cultural or personal beliefs.",
+        "<strong>Cold water.</strong> Cold shock, including gasping, rapid "
+        "breathing and panic; sudden changes in heart rate and blood "
+        "pressure, including arrhythmia; numbness and loss of grip and "
+        "coordination; hypothermia; slips and falls on wet or icy surfaces; "
+        "and fainting in or near water.",
+        "<strong>The setting and other people.</strong> Risks from the "
+        "actions, inaction, negligence or conduct of other participants, "
+        "assistants, space holders, volunteers, guests or third parties; "
+        "risks from the condition of the premises, venue, parking, grounds, "
+        "stairs, flooring, temperature, ventilation or equipment; risks of "
+        "travel to and from a session; and risks of exposure to "
+        "communicable illness.",
+    ]),
+    ("contraindications", "Contraindications and mandatory disclosure", [
+        "I understand that some or all of the Services, <strong>especially "
+        "Dynamic Breathwork, Sonic Neural Breathwork and the ice "
+        "plunge</strong>, are <strong>contraindicated</strong>, or need "
+        "clearance from a licensed provider, for anyone with any of the "
+        "conditions in the health checklist in this form. <strong>I "
+        "certify that I have disclosed every one of them that applies to "
+        "me.</strong>",
+        "<strong>Practitioner has the absolute right to decline, limit, "
+        "change, pause or end my participation at any time, with or without "
+        "giving a reason, including for safety. I agree that such a "
+        "decision is a legitimate exercise of Practitioner's judgment and "
+        "not a breach of any obligation to me.</strong>",
+    ]),
+    ("stop", "Right to stop and self-responsibility", [
+        "I understand that <strong>I am the final authority on my own body "
+        "and my own experience.</strong> I agree that:",
+        ("ul", [
+            "I will practice within my own limits and will not push past "
+            "pain, dizziness, breathlessness or distress.",
+            "I will modify, rest or stop <strong>at any point, without "
+            "needing permission or a reason</strong>.",
+            "I will not attempt any technique or practice I have reason to "
+            "believe is unsafe for me.",
+            "I will tell Practitioner if I become unwell, distressed or "
+            "overwhelmed. <strong>Practitioner cannot know what I am "
+            "experiencing inside unless I say so</strong>, and I accept "
+            "responsibility for saying so.",
+        ]),
+    ]),
+    ("aftercare", "Integration and aftercare", [
+        "I understand that what comes up in these practices <strong>may "
+        "keep affecting me after the session ends, sometimes for days or "
+        "longer.</strong> I understand that:",
+        ("ul", [
+            "Practitioner may recommend rest, water, not driving for a while "
+            "after breathwork, and not making major decisions right "
+            "afterwards, and I agree to follow those recommendations.",
+            "Practitioner does <strong>not</strong> provide clinical "
+            "integration, therapy or crisis support.",
+            "<strong>If I have significant or lasting distress, I will "
+            "contact a licensed mental health professional, my doctor, "
+            "emergency services, or the 988 Suicide and Crisis Lifeline by "
+            "calling or texting 988 in the US.</strong>",
+            "I have been advised to have my own support in place, especially "
+            "if I have a history of trauma.",
+        ]),
+    ]),
+    ("assumption", "Assumption of risk", [
+        ("caps", "I KNOWINGLY, FREELY AND VOLUNTARILY ASSUME ALL RISKS, KNOWN "
+         "AND UNKNOWN, OF TAKING PART IN THE SERVICES, INCLUDING ALL RISKS "
+         "DESCRIBED IN SECTION 5 AND ALL RISKS ARISING FROM THE ORDINARY "
+         "NEGLIGENCE OF THE RELEASED PARTIES, AND I ACCEPT FULL "
+         "RESPONSIBILITY FOR ANY INJURY, ILLNESS, PSYCHOLOGICAL HARM, "
+         "DISABILITY, DEATH OR PROPERTY LOSS RESULTING FROM MY "
+         "PARTICIPATION."),
+        "My participation is entirely voluntary. No one has required me to "
+        "take part. I am not relying on any spoken or written statement that "
+        "is not in this Agreement.",
+    ]),
+    ("release", "Release and waiver of liability", [
+        ("caps", "IN CONSIDERATION OF BEING ALLOWED TO TAKE PART IN THE "
+         "SERVICES, I, ON BEHALF OF MYSELF AND MY HEIRS, ASSIGNS, SPOUSE, "
+         "PERSONAL REPRESENTATIVES, EXECUTORS AND NEXT OF KIN, RELEASE, "
+         f"WAIVE, DISCHARGE AND COVENANT NOT TO SUE {RELEASED}, AND THEIR "
+         "ASSISTANTS, SPACE HOLDERS, VOLUNTEERS, AGENTS, SUCCESSORS, "
+         "LANDLORDS, AND THE OWNERS AND LESSORS OF ANY PREMISES USED FOR THE "
+         'SERVICES, TOGETHER THE "RELEASED PARTIES," FROM ANY AND ALL CLAIMS, '
+         "DEMANDS, LOSSES, LIABILITIES, ACTIONS, CAUSES OF ACTION, COSTS AND "
+         "EXPENSES OF ANY KIND, INCLUDING CLAIMS FOR PERSONAL INJURY, BODILY "
+         "INJURY, PSYCHOLOGICAL OR EMOTIONAL INJURY, ILLNESS, DISABILITY, "
+         "DEATH OR PROPERTY DAMAGE, ARISING OUT OF OR RELATED IN ANY WAY TO "
+         "MY PARTICIPATION IN THE SERVICES, WHETHER CAUSED BY THE ORDINARY "
+         "NEGLIGENCE OF THE RELEASED PARTIES OR OTHERWISE, TO THE FULLEST "
+         "EXTENT ALLOWED BY THE LAW OF GEORGIA."),
+        ("caps", "I INTEND THIS RELEASE TO BE AS BROAD AND INCLUSIVE AS THE "
+         "LAW ALLOWS."),
+        "<strong>Exceptions.</strong> This release does <strong>not</strong> "
+        "apply to, and I do not waive, claims arising from gross negligence, "
+        "recklessness, willful or wanton misconduct, intentional wrongdoing, "
+        "or any liability that cannot lawfully be released. If any part of "
+        "this release is held unenforceable, that part will be severed and "
+        "the rest will remain in full effect.",
+    ]),
+    ("indemnification", "Indemnification", [
+        "I agree to indemnify, defend and hold harmless the Released Parties "
+        "from any loss, liability, damage, cost or expense, including "
+        "reasonable attorney's fees, that they incur as a result of any "
+        "claim brought by me or on my behalf arising from my participation, "
+        "or my breach of this Agreement, including my failure to disclose or "
+        "my misstatement of health information under Sections 4 and 6.",
+    ]),
+    ("insurance", "Insurance", [
+        "I understand that <strong>Practitioner does not provide any health, "
+        "accident, disability or medical insurance for me</strong>, and that "
+        "I am solely responsible for my own insurance and for all medical "
+        "and related costs I incur. I either carry adequate health insurance "
+        "or accept full financial responsibility for any care I need.",
+    ]),
+    ("emergency", "Medical emergency authorization", [
+        "If I am injured, become ill or cannot communicate, I authorize "
+        "Practitioner to call emergency medical services and to arrange "
+        "whatever care reasonably appears necessary. <strong>I am solely "
+        "responsible for all costs of emergency response, transport and "
+        "treatment.</strong> Practitioner is not obligated to provide "
+        "medical care and is not liable for the acts or omissions of "
+        "emergency responders or treating providers.",
+    ]),
+    ("privacy", "Confidentiality and privacy", [
+        "Practitioner will treat what I share as confidential and will not "
+        "disclose it without my written consent, except where required by "
+        "law; where there is a serious and imminent risk of harm to me or "
+        "someone else; where disclosure is needed to get emergency care; or "
+        "where necessary to defend a legal claim.",
+        "<strong>I understand that Practitioner is not a HIPAA covered "
+        "entity</strong>, and that records Practitioner keeps, including "
+        "this form, which reaches Practitioner by email, may not carry the "
+        "protections that apply to licensed healthcare providers.",
+        "<strong>In a group,</strong> I agree to keep the identities and "
+        "disclosures of other participants confidential. I understand "
+        "Practitioner cannot guarantee that others will do the same.",
+    ]),
+    ("conduct", "Conduct", [
+        "I agree to arrive on time, to avoid disruptive conduct, to respect "
+        "other participants, and to follow reasonable safety instructions. "
+        "If I do not, I may be removed without a refund.",
+    ]),
+    ("general", "General provisions", [
+        ("ul", [
+            "<strong>Governing law.</strong> This Agreement is governed by "
+            "the laws of the State of Georgia, without regard to conflict of "
+            "laws principles.",
+            "<strong>Venue.</strong> Any action will be brought only in the "
+            "state or federal courts located in Georgia, and I consent to "
+            "personal jurisdiction there.",
+            "<strong>Dispute resolution.</strong> The parties will try "
+            "mediation in Georgia before filing suit, with the costs shared "
+            "equally.",
+            "<strong>Severability.</strong> If any provision is held invalid "
+            "or unenforceable, it will be changed only as much as needed to "
+            "make it enforceable, or severed, and the rest will remain in "
+            "full effect.",
+            "<strong>Entire agreement.</strong> This Agreement, including "
+            "the health questions and the consent to touch in this form, is "
+            "the entire agreement between the parties and replaces all "
+            "earlier spoken or written understandings. It can only be "
+            "changed in writing signed by both parties.",
+            "<strong>No waiver.</strong> If Practitioner does not enforce a "
+            "provision, that is not a waiver of it or of any other "
+            "provision.",
+            "<strong>Electronic signature.</strong> This Agreement may be "
+            "signed electronically, and my typed name below is my "
+            "signature.",
+        ]),
+    ]),
+]
+
+TOUCH_TERMS = [
+    "All touch is optional and needs my consent.",
+    "I can <strong>decline any touch, or all touch, at any time, for any "
+    "reason or no reason</strong>, without explaining, and it will not change "
+    "how I am cared for or welcomed in the space.",
+    "I can <strong>withdraw consent mid-session</strong>, including without "
+    "words by the agreed signal, and touch will stop immediately.",
+    "Touch stays over clothing and on appropriate, non-intimate areas of the "
+    "body.",
+    "<strong>Touch of a sexual nature is never appropriate</strong>, and any "
+    "such conduct should be reported immediately to the appropriate "
+    "authorities.",
+]
+
+
+def _req(on):
+    return ' <span class="req" aria-hidden="true">*</span>' if on else ""
+
+
+def _hint(text):
+    return f'\n                <span class="hint">{text}</span>' if text else ""
+
+
+def q_text(name, label, required=False, kind="text", hint="", auto=""):
+    r = " required" if required else ""
+    a = f' autocomplete="{auto}"' if auto else ""
+    return f"""              <div class="field field--q">
+                <label for="k-{name}">{label}{_req(required)}</label>{_hint(hint)}
+                <input id="k-{name}" name="{name}" type="{kind}"{a}{r}>
+              </div>"""
+
+
+def q_area(name, label, required=False, hint=""):
+    r = " required" if required else ""
+    return f"""              <div class="field field--q">
+                <label for="k-{name}">{label}{_req(required)}</label>{_hint(hint)}
+                <textarea id="k-{name}" name="{name}" rows="4"{r}></textarea>
+              </div>"""
+
+
+def q_radio(name, label, options, required=False):
+    r = " required" if required else ""
+    rows = "\n".join(
+        f'                <label class="check"><input type="radio" '
+        f'name="{name}" value="{o}"{r}><span class="check-body">{o}</span>'
+        f'</label>'
+        for o in options)
+    return f"""              <fieldset class="choices">
+                <legend>{label}{_req(required)}</legend>
+{rows}
+              </fieldset>"""
+
+
+def q_checks(prefix, label, options, required=False, hint=""):
+    """A checkbox group. Every box gets its own name (see the note at the top
+    of this section). A required group is checked by INTAKE_JS: at least one
+    box, and None of the above counts."""
+    one = " data-one" if required else ""
+    rows = "\n".join(
+        f'                <label class="check"><input type="checkbox" '
+        f'name="{prefix}_{k}" value="{re.sub("<[^>]+>", "", v)}"'
+        f'{" data-none" if k == "none" else ""}><span class="check-body">'
+        f'{v}</span></label>'
+        for k, v in options)
+    h = f'\n                <p class="hint">{hint}</p>' if hint else ""
+    return f"""              <fieldset class="choices"{one}>
+                <legend>{label}{_req(required)}</legend>{h}
+{rows}
+              </fieldset>"""
+
+
+def clause_body(items):
+    out = []
+    for it in items:
+        if isinstance(it, tuple) and it[0] == "caps":
+            out.append(f'              <p class="clause-caps">{it[1]}</p>')
+        elif isinstance(it, tuple) and it[0] == "ul":
+            lis = "\n".join(f"                <li>{x}</li>" for x in it[1])
+            out.append(f"              <ul>\n{lis}\n              </ul>")
+        else:
+            out.append(f"              <p>{it}</p>")
+    return "\n".join(out)
+
+
+def agreement_html():
+    return "\n".join(
+        f"""            <div class="clause" id="agreement-{n}">
+              <p class="clause-title">{n}. {title}</p>
+{clause_body(body)}
+            </div>"""
+        for n, (key, title, body) in enumerate(AGREEMENT, 1))
+
+
+# Today's date into the signature date, and the checkbox groups that need at
+# least one answer. Picking None of the above
+# clears the rest, and picking anything else clears None of the above.
+INTAKE_JS = """<script>
+Array.prototype.forEach.call(document.querySelectorAll(
+    'form[name="kiln-intake"]'), function (form) {
+  var date = form.querySelector('#k-signed_date');
+  if (date && !date.value) {
+    var d = new Date();
+    date.value = d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+  function check(g) {
+    var boxes = g.querySelectorAll('input[type="checkbox"]');
+    var any = Array.prototype.some.call(boxes, function (b) { return b.checked; });
+    boxes[0].setCustomValidity(any ? '' :
+      'Check at least one. None of the above counts.');
+  }
+  Array.prototype.forEach.call(form.querySelectorAll('fieldset'), function (g) {
+    var none = g.querySelector('[data-none]');
+    g.addEventListener('change', function (e) {
+      var t = e.target;
+      if (none && t.type === 'checkbox' && t.checked) {
+        if (t === none) {
+          Array.prototype.forEach.call(
+            g.querySelectorAll('input[type="checkbox"]'),
+            function (b) { if (b !== none) { b.checked = false; } });
+        } else {
+          none.checked = false;
+        }
+      }
+      if (g.hasAttribute('data-one')) { check(g); }
+    });
+    if (g.hasAttribute('data-one')) { check(g); }
+  });
+});
+</script>"""
+
+
+def kiln_page():
+    """Before The Kiln: watch, get ready, then a link to the form, which has
+    a page of its own (intake_page)."""
+    ready = "\n".join(
+        f"""            <div class="basic">
+              <p class="label">{t}</p>
+              <p>{b}</p>
+            </div>"""
+        for t, b in KILN_READY)
+    video = video_block({"name": "Sonic Neural Breathwork, explained",
+                         "slug": "kiln",
+                         "videos": [("Watch", "Not playing?", KILN_VIDEO)]},
+                        0).replace('\n        <p class="label">Watch</p>', '')
+    schema = [crumbs([("Breath library", "index.html"),
+                      ("Workshops", "workshops.html"),
+                      ("Before The Kiln", "kiln.html")])]
+    return f"""{head('Before The Kiln - Clay & Air',
+                     'Before The Kiln: watch Ben Holt explain Sonic Neural '
+                     'Breathwork, read how to come in ready, then fill in the '
+                     'intake and sign the waiver.',
+                     0, 'kiln.html', schema)}
+{header(0, 'workshops')}
+
+<main>
+  <section class="technique">
+    <div class="wrap">
+      <p class="label">The Kiln <span class="dot">&middot;</span> Sonic Neural Breathwork</p>
+      <h1>Before The Kiln.</h1>
+      <p class="purpose">Three steps, in this order. Watch Ben Holt explain
+      the practice, read how to come in ready, then fill in the intake and
+      sign the waiver. Everyone does all three before we breathe.</p>
+      <ol class="steps kiln-jump">
+        <li><span class="num">01</span><span class="text"><a href="#watch">Watch the explanation</a></span></li>
+        <li><span class="num">02</span><span class="text"><a href="#ready">Get ready</a></span></li>
+        <li><span class="num">03</span><span class="text"><a href="intake.html">Fill in the intake and sign</a></span></li>
+      </ol>
+
+      <section class="kiln-step" id="watch">
+        <p class="label">01 <span class="dot">&middot;</span> Watch</p>
+        <h2>Ben Holt explains Sonic Neural.</h2>
+        <p class="why">He designed it, and it is how I learned it. Watch it all
+        the way through before anything else. The rest of this page makes more
+        sense after it.</p>
+{video}
+      </section>
+
+      <section class="kiln-step" id="ready">
+        <p class="label">02 <span class="dot">&middot;</span> Get ready</p>
+        <h2>What to bring, and how to arrive.</h2>
+        <div class="basics">
+          <div class="basics-list kiln-ready">
+{ready}
+          </div>
+        </div>
+      </section>
+
+      <section class="kiln-step" id="sign">
+        <p class="label">03 <span class="dot">&middot;</span> Intake and waiver</p>
+        <h2>Fill in the intake and sign.</h2>
+        <p class="why">One form, on a page of its own. Five to ten minutes.</p>
+        <a class="btn btn--primary" href="intake.html">Fill in the intake</a>
+      </section>
+
+      <div class="next-step">
+        <p class="label">After the ceremony</p>
+        <p>Sonic Neural keeps working for days. Read this when you get
+        home.</p>
+        <a class="btn btn--secondary" href="integration.html">The days after</a>
+      </div>
+    </div>
+  </section>
+</main>
+{footer(0)}"""
+
+
+def intake_page():
+    """The form: the intake and the waiver together, one submit."""
+    touch = "\n".join(f"                <li>{x}</li>" for x in TOUCH_TERMS)
+    schema = [crumbs([("Breath library", "index.html"),
+                      ("Workshops", "workshops.html"),
+                      ("Before The Kiln", "kiln.html"),
+                      ("Intake and waiver", "intake.html")])]
+    return f"""{head('The Kiln intake and waiver - Clay & Air',
+                     'The intake form and waiver for The Kiln, the Clay & Air '
+                     'Sonic Neural Breathwork ceremony.',
+                     0, 'intake.html', schema)}
+{header(0, 'workshops')}
+
+<main>
+  <section class="technique technique--index">
+    <div class="wrap">
+      <p class="label">The Kiln <span class="dot">&middot;</span> Intake and waiver</p>
+      <h1>Tell me about you, then sign.</h1>
+      <p class="purpose">Five to ten minutes. Answer as honestly as you can. It
+      stays between us, and it is how I look after you in the room. If you
+      have not yet, watch the explanation and read how to get ready on <a
+      href="kiln.html">Before The Kiln</a> first.</p>
+
+      <div class="form-card form-card--solo">
+          <form class="intake-form" name="kiln-intake" method="POST"
+            action="/thanks-intake.html" data-netlify="true"
+            netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="kiln-intake">
+            <input type="hidden" name="agreement_version" value="{AGREEMENT_VERSION}">
+            <p class="pot">
+              <label>Leave this empty <input name="bot-field"></label>
+            </p>
+
+            <p class="small muted">Anything marked <span class="req">*</span>
+            is required.</p>
+
+            <label class="check"><input type="checkbox" name="watched_and_read"
+              value="Yes" required><span class="check-body">I have watched the
+              explanation and read <a href="kiln.html">how to get
+              ready</a>.{_req(True)}</span></label>
+
+            <div class="form-section">
+              <p class="label">About you</p>
+{q_text('first_name', 'First name', True, auto='given-name')}
+{q_text('last_name', 'Last name', True, auto='family-name')}
+{q_text('email', 'Email', True, 'email', auto='email')}
+{q_text('emergency_name', 'Emergency contact, full name', True)}
+{q_text('emergency_phone', 'Emergency contact, phone number', True, 'tel')}
+            </div>
+
+            <div class="form-section">
+              <p class="label">Your health</p>
+{q_checks('condition', 'Do you have or experience any of these right now?', CONDITIONS, True, 'Check all that apply.')}
+{q_area('condition_details', 'If you checked any of those, tell me as much as you are comfortable with.')}
+{q_area('medications', 'List every medication you are prescribed, including psychiatric medication, and any supplements.', True, 'Write none if there are none.')}
+{q_checks('used', 'Which of these have you used in the last 30 days?', SUBSTANCES, True, 'Check all that apply.')}
+{q_text('used_other', 'Anything else you have used that is not listed')}
+{q_area('anything_else', 'Anything else I should know before the ceremony?', hint='Physical, emotional, past trauma, anything. Share what you are ready to, or tell me in person.')}
+            </div>
+
+            <div class="form-section">
+              <p class="label">The waiver</p>
+              <p class="clause-head">Informed consent, assumption of risk,
+              release of liability and indemnification agreement, between
+              {PRACTITIONER}, and you.</p>
+              <p class="clause-caps">PLEASE READ CAREFULLY BEFORE SIGNING. THIS
+              IS A BINDING AGREEMENT THAT AFFECTS YOUR RIGHTS. DO NOT SIGN
+              UNLESS YOU HAVE READ AND UNDERSTOOD ALL OF IT. IF YOU HAVE
+              QUESTIONS, ASK BEFORE SIGNING OR TALK TO YOUR OWN ATTORNEY.</p>
+{agreement_html()}
+            </div>
+
+            <div class="form-section">
+              <p class="label">Consent to touch</p>
+              <div class="clause">
+                <p>Touch may be part of the Services: physical support, and
+                supportive or grounding contact during breathwork or ceremony,
+                including when distress or tetany comes up. I understand
+                that:</p>
+                <ul>
+{touch}
+                </ul>
+              </div>
+{q_radio('touch_consent', 'Your consent to touch', ['I consent to supportive touch as described', 'I decline all touch', 'I consent to touch, but only as I describe below'], True)}
+{q_area('touch_limits', 'If you chose the last one, describe the touch that is okay with you.')}
+            </div>
+
+            <div class="form-section">
+              <p class="label">Sign</p>
+              <p class="clause-caps">I HAVE READ THIS ENTIRE AGREEMENT. I
+              UNDERSTAND THAT I AM GIVING UP SUBSTANTIAL LEGAL RIGHTS,
+              INCLUDING THE RIGHT TO SUE. I HAVE HAD THE CHANCE TO ASK
+              QUESTIONS AND TO TALK TO MY OWN ATTORNEY AND MY OWN DOCTOR. I
+              SIGN IT FREELY AND VOLUNTARILY, WITHOUT INDUCEMENT, AND WITH
+              FULL KNOWLEDGE OF WHAT IT MEANS.</p>
+              <label class="check"><input type="checkbox" name="agree"
+                value="I have read and agree, and my answers are true"
+                required><span class="check-body">I have read this Agreement
+                and voluntarily agree to it, and everything I have shared here
+                is true and complete. I will tell you of any change before we
+                breathe.{_req(True)}</span></label>
+{q_text('signature', 'Type your full name as your signature', True, auto='name')}
+{q_text('signed_date', 'Date', True, 'date')}
+              <button type="submit" class="btn btn--primary btn--full">Sign and send</button>
+            </div>
+          </form>
+      </div>
+    </div>
+  </section>
+</main>
+{INTAKE_JS}
+{footer(0)}"""
+
+
+def intake_thanks_page():
+    btns = "\n".join(
+        f'        <a class="btn btn--secondary" href="{href}">{text}</a>'
+        for href, text in [("kiln.html#ready", "How to get ready"),
+                           ("integration.html", "The days after")])
+    return f"""{head('Intake received - Clay & Air',
+                     'Your Kiln intake and waiver reached Clay & Air.', 0,
+                     'thanks-intake.html').replace(
+        '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">',
+        '<meta name="robots" content="noindex, follow">')}
+{header(0)}
+
+<main>
+  <section class="technique technique--index">
+    <div class="wrap">
+      <p class="label">Received</p>
+      <h1>You are all set.</h1>
+      <p class="purpose">Your intake and waiver reached me. I read every one
+      myself before the ceremony, and if anything needs a conversation first,
+      I will reach out. If anything about your health changes before we
+      breathe, reply to any email from me and tell me.</p>
+      <div class="btn-row label--gap">
+{btns}
+      </div>
+    </div>
+  </section>
+</main>
+{footer(0)}"""
+
+
+# ---------------------------------------------------------------------------
+# The days after. Integration notes for after Sonic Neural, adapted from Ben
+# Holt's post-breathwork integration suggestions at Awakened Breath.
+# ---------------------------------------------------------------------------
+
+INTEGRATION_INTRO = (
+    "Sonic Neural keeps working after you get up off the floor. Things can "
+    "surface for days: a memory, a mood, a dream that will not let go. That "
+    "does not mean something went wrong. It means it is still moving. This "
+    "is how to give it room.")
+
+INTEGRATION = [
+    ("Go easy on yourself",
+     "You may feel open, tender or raw for a while. Make time to look after "
+     "yourself. Let whatever comes up come up, without judging it, and ease "
+     "back into ordinary life slowly. The hard feelings are often where the "
+     "insight is."),
+    ("Look after your body",
+     "Rest. Drink plenty of water. Eat real food. Take a bath. Walk, stretch "
+     "and move gently. Get outside, bare feet on the ground if you can, and "
+     "meet the sun in the morning and the evening."),
+    ("Stay with what came up",
+     "Notice the memories and feelings that surface over the next few days. "
+     "Write things down, the night of the session and after it. Keep a "
+     "notebook by the bed for dreams. Put music on and move. Share it with "
+     "people you trust, and be choosy about who that is. The grounding "
+     'practice on the <a href="freedom/sonic-neural.html">Sonic Neural</a> '
+     'page helps, and so does anything in the <a href="relaxing/index.html">'
+     "relaxing pillar</a>."),
+    ("Hold off on big decisions",
+     "Give it at least a week before you make any major decision. Talk it "
+     "over first with someone who will tell you the truth."),
+    ("Your emotions are on your side",
+     "What you feel is yours. When something stirs you up, ask what in you "
+     "it is pointing at, rather than what out there caused it. That is "
+     "where the work is."),
+    ("Protect your energy",
+     "A few days away from screens and the news, if you can. Some distance "
+     "from people who drain you. Simple, whole food that grounds you. Water. "
+     "And sleep. Get plenty of sleep."),
+    ("If it stays heavy",
+     "Tell me. Reply to any email from me and it comes straight to me. If "
+     "something is still heavy after a few days, talk to a therapist or your "
+     "doctor as well. If it ever feels like too much, call or text 988."),
+]
+
+
+def integration_page():
+    rows = "\n".join(
+        f"""          <div class="basic">
+            <p class="label">{t}</p>
+            <p>{b}</p>
+          </div>"""
+        for t, b in INTEGRATION)
+    schema = [crumbs([("Breath library", "index.html"),
+                      ("The days after", "integration.html")])]
+    return f"""{head('The days after Sonic Neural - Clay & Air',
+                     'Integration after Sonic Neural Breathwork: rest, water, '
+                     'writing it down, holding off on big decisions, and who '
+                     'to tell if it stays heavy.',
+                     0, 'integration.html', schema)}
+{header(0)}
+
+<main>
+  <section class="technique">
+    <div class="wrap">
+      <p class="label">Integration</p>
+      <h1>The days after.</h1>
+      <p class="purpose">{INTEGRATION_INTRO}</p>
+
+      <section class="basics">
+        <div class="basics-list kiln-ready">
+{rows}
+        </div>
+      </section>
+
+      <div class="next-step">
+        <p class="label">Keep breathing</p>
+        <p>The relaxing pillar is the daily practice that holds all of this
+        together.</p>
+        <a class="btn btn--secondary" href="relaxing/index.html">Relaxing techniques</a>
+      </div>
+    </div>
+  </section>
+</main>
+{footer(0)}"""
+
+
 def pillar_page(pillar):
     label, _ = PILLARS[pillar]
     items = [t for t in TECHNIQUES if t["pillar"] == pillar]
@@ -2688,7 +3565,7 @@ def sitemap_xml(paths):
     today = time.strftime("%Y-%m-%d")
     rows = []
     for p in paths:
-        if p == "thanks.html":
+        if p.startswith("thanks"):
             continue                      # a form receipt is not a landing page
         pri = "1.0" if p == "index.html" else (
             "0.9" if p in ("workshops.html",) or p.endswith("/index.html") else "0.8")
@@ -2737,7 +3614,13 @@ def llms_txt():
             f"- [Workshops]({canonical('workshops.html')}): three bookable "
             "workshops. Centering and First Fire run an hour; The Kiln is a "
             "three and a half hour Sonic Neural session. Contact form on the "
-            "page.", "",
+            "page.",
+            f"- [Before The Kiln]({canonical('kiln.html')}): watch Ben Holt "
+            "explain Sonic Neural and read how to come in ready.",
+            f"- [The Kiln intake]({canonical('intake.html')}): the intake "
+            "form and waiver for The Kiln.",
+            f"- [The days after]({canonical('integration.html')}): "
+            "integration notes for the days after a Sonic Neural ceremony.", "",
             "## Safety", "",
             "Breath holds and forceful breathing are not for everyone. Anyone "
             "with a heart or lung condition, high or low blood pressure, "
@@ -2756,9 +3639,14 @@ def write(path, content):
 
 
 if __name__ == "__main__":
-    paths = ["index.html", "workshops.html", "about.html", "thanks.html"]
+    paths = ["index.html", "workshops.html", "kiln.html", "intake.html",
+             "integration.html", "about.html", "thanks.html"]
     write("index.html", index_page())
     write("workshops.html", sessions_page())
+    write("kiln.html", kiln_page())
+    write("intake.html", intake_page())
+    write("integration.html", integration_page())
+    write("thanks-intake.html", intake_thanks_page())
     write("about.html", about_page())
     write("thanks.html", thanks_page())
     for pillar in PILLARS:

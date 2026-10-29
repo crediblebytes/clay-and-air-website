@@ -46,6 +46,11 @@ sp.word_frequency.load_words([
     "breathwork", "neuro", "linguistic", "immersive",
     "instagram", "tiktok", "youtube", "netlify", "plausible", "org",
     "clayandair", "clayandairnow",
+    # the Kiln intake and agreement: medical, legal and drug names
+    "adderall", "benzodiazepines", "carpopedal", "derealization", "fentanyl",
+    "ghb", "hipaa", "hypocapnia", "ketamine", "maois", "mdma", "opioids",
+    "oxycodone", "ptsd", "raynaud's", "schizoaffective", "severability",
+    "texting", "vaped", "wellbeing",
 ])
 allow = set("""ujjayi nadi shodhana bhastrika kapalabhati buteyko qi gong tummo
 kundalini pranayama savasana hormesis parasympathetic vagus namaste clay

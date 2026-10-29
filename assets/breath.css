@@ -443,8 +443,14 @@ a.card:hover { border-color: var(--border-strong); color: var(--text-body); }
    is left, so adding a fourth never squeezes the mark below legibility */
 .footer-top {
   display: grid;
-  grid-template-columns: minmax(475px, 2fr) repeat(3, 1fr);
-  gap: var(--space-8);
+  grid-template-columns: minmax(475px, 2fr) repeat(4, 1fr);
+  gap: var(--space-8) var(--space-6);
+}
+/* four link columns do not fit beside the lockup on a narrow screen, so the
+   lockup takes the first row and the columns sit under it */
+@media (max-width: 1100px) {
+  .footer-top { grid-template-columns: repeat(4, 1fr); }
+  .footer-top > :first-child { grid-column: 1 / -1; }
 }
 /* full lockup at its minimum legible width: 475px puts BREATHWORK's cap
    height at the 6.5px floor. The column is 476px. */
@@ -981,3 +987,73 @@ a.card-link:hover { color: var(--text-body); }
   .about-portrait { max-width: 420px; grid-row: 1; }
   .practice-grid { grid-template-columns: 1fr; }
 }
+
+/* ---------- the Kiln intake and the days after ----------
+   One column, built from the technique page parts: the numbered list, the
+   video, the paper card. The form is the workshops form card narrowed to a
+   reading width because it is long. Its questions are full sentences, so
+   their labels are set in body type: a sentence in uppercase mono does not
+   read. */
+
+.kiln-jump { margin-top: var(--space-6); max-width: var(--measure-prose); }
+.kiln-step { padding-top: var(--space-9); }
+.kiln-step h2 {
+  font: var(--weight-display) var(--size-h2) / var(--lh-h2) var(--font-display);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--space-4);
+}
+.kiln-step > .why { margin-bottom: var(--space-6); }
+.kiln-step .video,
+.kiln-step .basics { margin-bottom: 0; }
+.kiln-ready { margin-top: 0; }
+.kiln-ready .basic:first-child { border-top: 0; padding-top: 0; }
+.form-card--solo { max-width: 760px; }
+.kiln-step + .next-step { margin-top: var(--space-9); }
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-top: var(--space-7);
+  border-top: var(--hairline) solid var(--border-hairline);
+}
+.form-section > .label { margin: 0; }
+.field--q > label,
+.choices legend {
+  font: var(--weight-medium) var(--size-body) / var(--lh-body) var(--font-body);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text-body);
+}
+.choices { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.choices legend { padding: 0; margin: 0 0 var(--space-3); }
+.choices .hint { font-size: var(--size-small); color: var(--text-tertiary); margin: 0; }
+.check input[type="radio"],
+.check input[type="radio"]::after { border-radius: 50%; }
+.req { color: var(--text-accent); }
+
+.clause {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: var(--hairline) solid var(--border-hairline);
+}
+.form-section > .clause:first-of-type { border-top: 0; padding-top: 0; }
+.clause p,
+.clause li { font-size: var(--size-small); line-height: var(--lh-small); color: var(--text-secondary); }
+.clause p { margin: 0; }
+.clause ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--space-2); }
+.clause strong,
+.clause-caps,
+.clause-head { color: var(--text-body); font-weight: var(--weight-medium); }
+.clause .clause-title {
+  font: var(--weight-medium) var(--size-label) / var(--lh-label) var(--font-mono);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-body);
+}
+.form-section .clause-caps { font-size: var(--size-small); line-height: var(--lh-small); margin: 0; }
+.form-section .clause-head { margin: 0; }
+
+.btn-row { display: flex; flex-wrap: wrap; gap: var(--space-3); }
