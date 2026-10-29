@@ -132,29 +132,30 @@
               <fieldset class="choices" data-one>
                 <legend>Do you have or experience any of these right now? <span class="req" aria-hidden="true">*</span></legend>
                 <p class="hint">Check all that apply.</p>
-                <label class="check"><input type="checkbox" name="condition_pregnancy" value="Pregnancy, or trying to conceive"><span class="check-body">Pregnancy, or trying to conceive</span></label>
-                <label class="check"><input type="checkbox" name="condition_heart" value="Heart disease, angina, a past heart attack, arrhythmia, a pacemaker, or a past stroke or TIA"><span class="check-body">Heart disease, angina, a past heart attack, arrhythmia, a pacemaker, or a past stroke or TIA</span></label>
-                <label class="check"><input type="checkbox" name="condition_high_bp" value="High or uncontrolled blood pressure"><span class="check-body">High or uncontrolled blood pressure</span></label>
-                <label class="check"><input type="checkbox" name="condition_low_bp" value="Very low blood pressure, or fainting easily"><span class="check-body">Very low blood pressure, or fainting easily</span></label>
-                <label class="check"><input type="checkbox" name="condition_aneurysm" value="Aneurysm, your own or in your immediate family"><span class="check-body">Aneurysm, your own or in your immediate family</span></label>
-                <label class="check"><input type="checkbox" name="condition_seizure" value="Epilepsy, a seizure disorder, or a history of seizures"><span class="check-body">Epilepsy, a seizure disorder, or a history of seizures</span></label>
-                <label class="check"><input type="checkbox" name="condition_eye" value="Glaucoma, a detached retina, or another serious eye condition"><span class="check-body">Glaucoma, a detached retina, or another serious eye condition</span></label>
-                <label class="check"><input type="checkbox" name="condition_asthma" value="Asthma or another serious breathing condition. Bring your inhaler"><span class="check-body">Asthma or another serious breathing condition. Bring your inhaler</span></label>
-                <label class="check"><input type="checkbox" name="condition_bone" value="Osteoporosis or serious bone density loss"><span class="check-body">Osteoporosis or serious bone density loss</span></label>
-                <label class="check"><input type="checkbox" name="condition_injury" value="Recent surgery, a recent injury, or any acute physical condition"><span class="check-body">Recent surgery, a recent injury, or any acute physical condition</span></label>
-                <label class="check"><input type="checkbox" name="condition_diabetes" value="Diabetes, especially if you take insulin"><span class="check-body">Diabetes, especially if you take insulin</span></label>
-                <label class="check"><input type="checkbox" name="condition_migraine" value="Severe or uncontrolled migraines"><span class="check-body">Severe or uncontrolled migraines</span></label>
-                <label class="check"><input type="checkbox" name="condition_blood_thinners" value="Prescription blood thinners"><span class="check-body">Prescription blood thinners</span></label>
-                <label class="check"><input type="checkbox" name="condition_cold" value="Raynaud's, or anything else that rules out cold water"><span class="check-body">Raynaud's, or anything else that rules out cold water</span></label>
-                <label class="check"><input type="checkbox" name="condition_psychosis" value="Schizophrenia, schizoaffective disorder, bipolar disorder, psychosis or a past psychotic episode, or a family history of any of these"><span class="check-body">Schizophrenia, schizoaffective disorder, bipolar disorder, psychosis or a past psychotic episode, or a family history of any of these</span></label>
-                <label class="check"><input type="checkbox" name="condition_suicide" value="Active thoughts of suicide, a recent suicide attempt, or a recent stay in a psychiatric hospital"><span class="check-body">Active thoughts of suicide, a recent suicide attempt, or a recent stay in a psychiatric hospital</span></label>
-                <label class="check"><input type="checkbox" name="condition_ptsd" value="Severe or complex PTSD, or a dissociative disorder"><span class="check-body">Severe or complex PTSD, or a dissociative disorder</span></label>
-                <label class="check"><input type="checkbox" name="condition_panic" value="A history of severe panic attacks"><span class="check-body">A history of severe panic attacks</span></label>
-                <label class="check"><input type="checkbox" name="condition_depression" value="Severe depression or severe anxiety right now"><span class="check-body">Severe depression or severe anxiety right now</span></label>
-                <label class="check"><input type="checkbox" name="condition_substance" value="A substance use disorder right now, or recent withdrawal"><span class="check-body">A substance use disorder right now, or recent withdrawal</span></label>
-                <label class="check"><input type="checkbox" name="condition_psych_meds" value="Antipsychotics, mood stabilizers, lithium, MAOIs, benzodiazepines, or other psychoactive medication"><span class="check-body">Antipsychotics, mood stabilizers, lithium, MAOIs, benzodiazepines, or other psychoactive medication</span></label>
-                <label class="check"><input type="checkbox" name="condition_other" value="Any other condition that intense breathing, physical effort, altered states or emotional release could affect. Tell me about it below"><span class="check-body">Any other condition that intense breathing, physical effort, altered states or emotional release could affect. Tell me about it below</span></label>
-                <label class="check"><input type="checkbox" name="condition_none" value="None of the above" data-none><span class="check-body">None of the above</span></label>
+                <input type="hidden" name="health_conditions" value="">
+                <label class="check"><input type="checkbox" value="Pregnancy, or trying to conceive"><span class="check-body">Pregnancy, or trying to conceive</span></label>
+                <label class="check"><input type="checkbox" value="Heart disease, angina, a past heart attack, arrhythmia, a pacemaker, or a past stroke or TIA"><span class="check-body">Heart disease, angina, a past heart attack, arrhythmia, a pacemaker, or a past stroke or TIA</span></label>
+                <label class="check"><input type="checkbox" value="High or uncontrolled blood pressure"><span class="check-body">High or uncontrolled blood pressure</span></label>
+                <label class="check"><input type="checkbox" value="Very low blood pressure, or fainting easily"><span class="check-body">Very low blood pressure, or fainting easily</span></label>
+                <label class="check"><input type="checkbox" value="Aneurysm, your own or in your immediate family"><span class="check-body">Aneurysm, your own or in your immediate family</span></label>
+                <label class="check"><input type="checkbox" value="Epilepsy, a seizure disorder, or a history of seizures"><span class="check-body">Epilepsy, a seizure disorder, or a history of seizures</span></label>
+                <label class="check"><input type="checkbox" value="Glaucoma, a detached retina, or another serious eye condition"><span class="check-body">Glaucoma, a detached retina, or another serious eye condition</span></label>
+                <label class="check"><input type="checkbox" value="Asthma or another serious breathing condition. Bring your inhaler"><span class="check-body">Asthma or another serious breathing condition. Bring your inhaler</span></label>
+                <label class="check"><input type="checkbox" value="Osteoporosis or serious bone density loss"><span class="check-body">Osteoporosis or serious bone density loss</span></label>
+                <label class="check"><input type="checkbox" value="Recent surgery, a recent injury, or any acute physical condition"><span class="check-body">Recent surgery, a recent injury, or any acute physical condition</span></label>
+                <label class="check"><input type="checkbox" value="Diabetes, especially if you take insulin"><span class="check-body">Diabetes, especially if you take insulin</span></label>
+                <label class="check"><input type="checkbox" value="Severe or uncontrolled migraines"><span class="check-body">Severe or uncontrolled migraines</span></label>
+                <label class="check"><input type="checkbox" value="Prescription blood thinners"><span class="check-body">Prescription blood thinners</span></label>
+                <label class="check"><input type="checkbox" value="Raynaud's, or anything else that rules out cold water"><span class="check-body">Raynaud's, or anything else that rules out cold water</span></label>
+                <label class="check"><input type="checkbox" value="Schizophrenia, schizoaffective disorder, bipolar disorder, psychosis or a past psychotic episode, or a family history of any of these"><span class="check-body">Schizophrenia, schizoaffective disorder, bipolar disorder, psychosis or a past psychotic episode, or a family history of any of these</span></label>
+                <label class="check"><input type="checkbox" value="Active thoughts of suicide, a recent suicide attempt, or a recent stay in a psychiatric hospital"><span class="check-body">Active thoughts of suicide, a recent suicide attempt, or a recent stay in a psychiatric hospital</span></label>
+                <label class="check"><input type="checkbox" value="Severe or complex PTSD, or a dissociative disorder"><span class="check-body">Severe or complex PTSD, or a dissociative disorder</span></label>
+                <label class="check"><input type="checkbox" value="A history of severe panic attacks"><span class="check-body">A history of severe panic attacks</span></label>
+                <label class="check"><input type="checkbox" value="Severe depression or severe anxiety right now"><span class="check-body">Severe depression or severe anxiety right now</span></label>
+                <label class="check"><input type="checkbox" value="A substance use disorder right now, or recent withdrawal"><span class="check-body">A substance use disorder right now, or recent withdrawal</span></label>
+                <label class="check"><input type="checkbox" value="Antipsychotics, mood stabilizers, lithium, MAOIs, benzodiazepines, or other psychoactive medication"><span class="check-body">Antipsychotics, mood stabilizers, lithium, MAOIs, benzodiazepines, or other psychoactive medication</span></label>
+                <label class="check"><input type="checkbox" value="Any other condition that intense breathing, physical effort, altered states or emotional release could affect. Tell me about it below"><span class="check-body">Any other condition that intense breathing, physical effort, altered states or emotional release could affect. Tell me about it below</span></label>
+                <label class="check"><input type="checkbox" value="None of the above" data-none><span class="check-body">None of the above</span></label>
               </fieldset>
               <div class="field field--q">
                 <label for="k-condition_details">If you checked any of those, tell me as much as you are comfortable with.</label>
@@ -168,22 +169,23 @@
               <fieldset class="choices" data-one>
                 <legend>Which of these have you used in the last 30 days? <span class="req" aria-hidden="true">*</span></legend>
                 <p class="hint">Check all that apply.</p>
-                <label class="check"><input type="checkbox" name="used_beer_wine" value="Beer or wine"><span class="check-body">Beer or wine</span></label>
-                <label class="check"><input type="checkbox" name="used_liquor" value="Hard liquor"><span class="check-body">Hard liquor</span></label>
-                <label class="check"><input type="checkbox" name="used_energy" value="Energy drinks, like Red Bull, Monster or Celsius"><span class="check-body">Energy drinks, like Red Bull, Monster or Celsius</span></label>
-                <label class="check"><input type="checkbox" name="used_nicotine" value="Nicotine, smoked, vaped or chewed"><span class="check-body">Nicotine, smoked, vaped or chewed</span></label>
-                <label class="check"><input type="checkbox" name="used_cannabis" value="Cannabis"><span class="check-body">Cannabis</span></label>
-                <label class="check"><input type="checkbox" name="used_stimulants" value="Stimulants not prescribed to you, like Adderall or Ritalin"><span class="check-body">Stimulants not prescribed to you, like Adderall or Ritalin</span></label>
-                <label class="check"><input type="checkbox" name="used_cocaine" value="Cocaine"><span class="check-body">Cocaine</span></label>
-                <label class="check"><input type="checkbox" name="used_heroin" value="Heroin"><span class="check-body">Heroin</span></label>
-                <label class="check"><input type="checkbox" name="used_opioids" value="Opioids not prescribed to you, like oxycodone, fentanyl or morphine"><span class="check-body">Opioids not prescribed to you, like oxycodone, fentanyl or morphine</span></label>
-                <label class="check"><input type="checkbox" name="used_meth" value="Methamphetamine"><span class="check-body">Methamphetamine</span></label>
-                <label class="check"><input type="checkbox" name="used_ghb" value="GHB"><span class="check-body">GHB</span></label>
-                <label class="check"><input type="checkbox" name="used_ketamine" value="Ketamine not prescribed to you"><span class="check-body">Ketamine not prescribed to you</span></label>
-                <label class="check"><input type="checkbox" name="used_mdma" value="MDMA"><span class="check-body">MDMA</span></label>
-                <label class="check"><input type="checkbox" name="used_psychedelics" value="Psychedelics or plant medicine"><span class="check-body">Psychedelics or plant medicine</span></label>
-                <label class="check"><input type="checkbox" name="used_private" value="I would rather tell you in person"><span class="check-body">I would rather tell you in person</span></label>
-                <label class="check"><input type="checkbox" name="used_none" value="None of the above" data-none><span class="check-body">None of the above</span></label>
+                <input type="hidden" name="used_last_30_days" value="">
+                <label class="check"><input type="checkbox" value="Beer or wine"><span class="check-body">Beer or wine</span></label>
+                <label class="check"><input type="checkbox" value="Hard liquor"><span class="check-body">Hard liquor</span></label>
+                <label class="check"><input type="checkbox" value="Energy drinks, like Red Bull, Monster or Celsius"><span class="check-body">Energy drinks, like Red Bull, Monster or Celsius</span></label>
+                <label class="check"><input type="checkbox" value="Nicotine, smoked, vaped or chewed"><span class="check-body">Nicotine, smoked, vaped or chewed</span></label>
+                <label class="check"><input type="checkbox" value="Cannabis"><span class="check-body">Cannabis</span></label>
+                <label class="check"><input type="checkbox" value="Stimulants not prescribed to you, like Adderall or Ritalin"><span class="check-body">Stimulants not prescribed to you, like Adderall or Ritalin</span></label>
+                <label class="check"><input type="checkbox" value="Cocaine"><span class="check-body">Cocaine</span></label>
+                <label class="check"><input type="checkbox" value="Heroin"><span class="check-body">Heroin</span></label>
+                <label class="check"><input type="checkbox" value="Opioids not prescribed to you, like oxycodone, fentanyl or morphine"><span class="check-body">Opioids not prescribed to you, like oxycodone, fentanyl or morphine</span></label>
+                <label class="check"><input type="checkbox" value="Methamphetamine"><span class="check-body">Methamphetamine</span></label>
+                <label class="check"><input type="checkbox" value="GHB"><span class="check-body">GHB</span></label>
+                <label class="check"><input type="checkbox" value="Ketamine not prescribed to you"><span class="check-body">Ketamine not prescribed to you</span></label>
+                <label class="check"><input type="checkbox" value="MDMA"><span class="check-body">MDMA</span></label>
+                <label class="check"><input type="checkbox" value="Psychedelics or plant medicine"><span class="check-body">Psychedelics or plant medicine</span></label>
+                <label class="check"><input type="checkbox" value="I would rather tell you in person"><span class="check-body">I would rather tell you in person</span></label>
+                <label class="check"><input type="checkbox" value="None of the above" data-none><span class="check-body">None of the above</span></label>
               </fieldset>
               <div class="field field--q">
                 <label for="k-used_other">Anything else you have used that is not listed</label>
@@ -402,6 +404,15 @@ Array.prototype.forEach.call(document.querySelectorAll(
     boxes[0].setCustomValidity(any ? '' :
       'Check at least one. None of the above counts.');
   }
+  // the ticked boxes, as one line in the checklist's hidden field
+  function sync(g) {
+    var out = g.querySelector('input[type="hidden"]');
+    if (!out) { return; }
+    out.value = Array.prototype.filter.call(
+      g.querySelectorAll('input[type="checkbox"]'),
+      function (b) { return b.checked; }
+    ).map(function (b) { return b.value; }).join('; ');
+  }
   Array.prototype.forEach.call(form.querySelectorAll('fieldset'), function (g) {
     var none = g.querySelector('[data-none]');
     g.addEventListener('change', function (e) {
@@ -416,8 +427,13 @@ Array.prototype.forEach.call(document.querySelectorAll(
         }
       }
       if (g.hasAttribute('data-one')) { check(g); }
+      sync(g);
     });
     if (g.hasAttribute('data-one')) { check(g); }
+    sync(g);
+  });
+  form.addEventListener('submit', function () {
+    Array.prototype.forEach.call(form.querySelectorAll('fieldset'), sync);
   });
 });
 </script>

@@ -2566,9 +2566,10 @@ def thanks_page():
 # Liability form. It posts to Netlify Forms like the workshops form, so a
 # submission arrives by email.
 #
-# Netlify keeps only the last value when several inputs share a name, in the
-# dashboard and in the notification email, so every checkbox has a name of
-# its own. Do not collapse them back into one name.
+# Netlify keeps only the last value when several inputs share a name, and it
+# lists every named input as a row of its own, ticked or not. So the boxes in
+# a checklist carry no name at all: INTAKE_JS copies the ticked ones into one
+# hidden field per checklist, which arrives as a single line.
 # ---------------------------------------------------------------------------
 
 # Who the agreement is with. If Clay & Air becomes an LLC, change both lines.
@@ -3027,20 +3028,22 @@ def q_radio(name, label, options, required=False):
               </fieldset>"""
 
 
-def q_checks(prefix, label, options, required=False, hint=""):
-    """A checkbox group. Every box gets its own name (see the note at the top
-    of this section). A required group is checked by INTAKE_JS: at least one
-    box, and None of the above counts."""
+def q_checks(name, label, options, required=False, hint=""):
+    """A checklist. The boxes are unnamed; INTAKE_JS joins the ticked ones
+    into the hidden field called name (see the note at the top of this
+    section). A required list needs at least one box, and None of the above
+    counts."""
     one = " data-one" if required else ""
     rows = "\n".join(
         f'                <label class="check"><input type="checkbox" '
-        f'name="{prefix}_{k}" value="{re.sub("<[^>]+>", "", v)}"'
+        f'value="{re.sub("<[^>]+>", "", v)}"'
         f'{" data-none" if k == "none" else ""}><span class="check-body">'
         f'{v}</span></label>'
         for k, v in options)
     h = f'\n                <p class="hint">{hint}</p>' if hint else ""
     return f"""              <fieldset class="choices"{one}>
                 <legend>{label}{_req(required)}</legend>{h}
+                <input type="hidden" name="{name}" value="">
 {rows}
               </fieldset>"""
 
@@ -3086,6 +3089,15 @@ Array.prototype.forEach.call(document.querySelectorAll(
     boxes[0].setCustomValidity(any ? '' :
       'Check at least one. None of the above counts.');
   }
+  // the ticked boxes, as one line in the checklist's hidden field
+  function sync(g) {
+    var out = g.querySelector('input[type="hidden"]');
+    if (!out) { return; }
+    out.value = Array.prototype.filter.call(
+      g.querySelectorAll('input[type="checkbox"]'),
+      function (b) { return b.checked; }
+    ).map(function (b) { return b.value; }).join('; ');
+  }
   Array.prototype.forEach.call(form.querySelectorAll('fieldset'), function (g) {
     var none = g.querySelector('[data-none]');
     g.addEventListener('change', function (e) {
@@ -3100,8 +3112,13 @@ Array.prototype.forEach.call(document.querySelectorAll(
         }
       }
       if (g.hasAttribute('data-one')) { check(g); }
+      sync(g);
     });
     if (g.hasAttribute('data-one')) { check(g); }
+    sync(g);
+  });
+  form.addEventListener('submit', function () {
+    Array.prototype.forEach.call(form.querySelectorAll('fieldset'), sync);
   });
 });
 </script>"""
@@ -3234,10 +3251,10 @@ def intake_page():
 
             <div class="form-section">
               <p class="label">Your health</p>
-{q_checks('condition', 'Do you have or experience any of these right now?', CONDITIONS, True, 'Check all that apply.')}
+{q_checks('health_conditions', 'Do you have or experience any of these right now?', CONDITIONS, True, 'Check all that apply.')}
 {q_area('condition_details', 'If you checked any of those, tell me as much as you are comfortable with.')}
 {q_area('medications', 'List every medication you are prescribed, including psychiatric medication, and any supplements.', True, 'Write none if there are none.')}
-{q_checks('used', 'Which of these have you used in the last 30 days?', SUBSTANCES, True, 'Check all that apply.')}
+{q_checks('used_last_30_days', 'Which of these have you used in the last 30 days?', SUBSTANCES, True, 'Check all that apply.')}
 {q_text('used_other', 'Anything else you have used that is not listed')}
 {q_area('anything_else', 'Anything else I should know before the ceremony?', hint='Physical, emotional, past trauma, anything. Share what you are ready to, or tell me in person.')}
             </div>
