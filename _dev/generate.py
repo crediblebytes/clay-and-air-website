@@ -972,9 +972,9 @@ BENEFITS = {
     ],
     "sonic-neural": [
         "A mystical or psychedelic experience, with nothing in your system",
-        "Discharges what the body has been holding on to",
-        "Brings up what got buried, so it can be dealt with",
-        "One session can change the course of something",
+        "Gives the body room to let go of what it has been holding",
+        "Can bring up what got buried, so you can look at it",
+        "One session can change how you see something",
     ],
     "digestion-igniter": [
         "Massages the organs in the gut",
@@ -1041,12 +1041,45 @@ BENEFITS = {
 # it does". Summarised from Ben Holt's "The Science Behind Dynamic Breathwork"
 # notes and checked against the studies linked in SCIENCE_SOURCES.
 SCIENCE_INTRO = {
+    "sonic-neural":
+        "Sonic Neural is a holotropic style of breathwork: connected breaths, "
+        "loud music and your eyes covered for about fifty five minutes. The "
+        "research on it is young. This is what it shows so far, and what it "
+        "does not.",
     "dynamic-breathwork":
         "Every part of the round does a bit of everything. Each step also has "
         "one job it does best, and that is the easiest way to remember it.",
 }
 
 SCIENCE = {
+    "sonic-neural": [
+        ("The breathing: chemistry",
+         "Breathing faster or deeper than your body needs blows off carbon "
+         "dioxide faster than you make it, and your blood turns slightly more "
+         "alkaline for a while. That is the tingling, the light head, the "
+         "tight hands and the swings in temperature. It is chemistry, and it "
+         "settles when you breathe normally again. It can still mean something "
+         "to you. Both can be true."),
+        ("The brain: more flexible",
+         "Brain waves are one way to look at it, but they are not rooms you "
+         "walk in and out of. A 2024 study recorded brain activity across "
+         "hundreds of breathwork sessions. The stronger the experience, the "
+         "more varied and less predictable the brain's activity became. Alpha "
+         "waves, the ones a simple brain wave story would point to, did not "
+         "explain it."),
+        ("Blood flow: the sense of self",
+         "A 2025 brain scan study at Brighton and Sussex Medical School looked "
+         "at this kind of breathing done to music. Blood flow dropped in areas "
+         "tied to the sense of self and rose in areas tied to emotion and "
+         "memory. The bigger the change, the deeper people went into unity and "
+         "bliss, and they reported less fear even as their bodies worked "
+         "harder."),
+        ("What it does not prove",
+         "None of this says everyone follows the same path, that shaking means "
+         "trauma is leaving, that an image is an exact memory, or that one "
+         "session rewires you for good. It says breathing alone can change how "
+         "you experience yourself. What it means is yours to decide."),
+    ],
     "dynamic-breathwork": [
         ("The forty breaths: inflammation",
          "Fast, full breathing blows off carbon dioxide. CO2 is what keeps your "
@@ -1087,6 +1120,12 @@ SCIENCE = {
 }
 
 SCIENCE_SOURCES = {
+    "sonic-neural": [
+        ("Breathwork and brain complexity: Cerebral Cortex, 2024",
+         "https://pubmed.ncbi.nlm.nih.gov/39191666/"),
+        ("Breathwork, music and blood flow: Kartar and others, PLOS ONE, 2025",
+         "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0329411"),
+    ],
     "dynamic-breathwork": [
         ("The immune study: Kox and others, PNAS, 2014",
          "https://pmc.ncbi.nlm.nih.gov/articles/PMC4034215/"),
@@ -1200,8 +1239,8 @@ SITE_NAME = "Clay & Air"
 # search snippets, the Organization schema, llms.txt. The tagline is a poem and
 # says nothing about what this is, so it cannot do that second job on its own.
 SITE_TAGLINE = "Built from clay. Brought to life by breath."
-SITE_DESC = ("Breathwork for men. A library of breathing techniques you can run "
-             "on your own, plus workshops and retreats run in person.")
+SITE_DESC = ("A library of breathing techniques you can run on your own, plus "
+             "breathwork workshops and retreats run in person.")
 
 
 def canonical(path):
@@ -1584,7 +1623,7 @@ def technique_page(t):
         if SCIENCE_INTRO.get(t["slug"]):
             intro = f'\n        <p class="basics-intro">{SCIENCE_INTRO[t["slug"]]}</p>'
         science = f"""
-      <section class="basics">
+      <section class="basics" id="science">
         <p class="label">The science</p>{intro}
         <div class="basics-list">
 {rows}
@@ -2108,7 +2147,10 @@ def index_page():
 # and data-netlify are what Netlify's build-time HTML parse looks for.
 #
 # WORKSHOPS is the offer ladder: Centering, First Fire, The Kiln. Each one
-# mirrors its print one-sheet, so change both together.
+# mirrors its print one-sheet, so change both together. The one-sheet ships as
+# assets/workshops/clay-and-air-workshops.pdf, exported from the "Clay & Air
+# Workshop Flyer" design canvas; re-export it when the copy here changes. It is
+# reachable by its URL but deliberately not linked from any page.
 # ---------------------------------------------------------------------------
 
 # Don's own words, his final wording.
@@ -2141,13 +2183,13 @@ WORKSHOPS = [
         "specs": [
             ("Format", "1 hour. 4 to 15 people. Any time of day."),
             ("For", "Anyone. No experience or flexibility needed."),
-            ("Flow", 'Handpan while people settle. <a href="relaxing/'
+            ("Flow", '<a href="relaxing/'
                      'foundational-breath.html">Foundational breath</a>, then '
                      '<a href="relaxing/box-breathing.html">box breathing</a>, '
                      'then <a href="relaxing/cleansing-breath.html">cleansing '
                      'breath</a> lying down with tuning forks.'),
             ("You provide", "A quiet room, floor space, low light if you have it."),
-            ("I bring", "Speaker, tuning forks, handpan, spare mats."),
+            ("I bring", "Speaker, tuning forks, spare mats."),
         ],
         "pull": "It sounds soft. It is.",
         "safety": "Slow nasal breathing with short holds. If you have a heart "
@@ -2163,16 +2205,16 @@ WORKSHOPS = [
         "head": "Yes, it is breathwork. No, nobody hugs you.",
         "lead": "Forty hard breaths and two holds. Then you find out.",
         "specs": [
-            ("Format", "1 hour. 4 to 10 people. Morning or afternoon."),
+            ("Format", "1.5 hours. 4 to 10 people. Morning or afternoon."),
             ("For", "Anyone cleared to hold their breath. No experience needed."),
-            ("Flow", 'Handpan and resin while people settle. '
+            ("Flow", 'Resin while people settle. '
                      '<a href="relaxing/foundational-breath.html">Foundational '
                      'breath</a>, then <a href="activating/dynamic-breathwork'
                      '.html">Dynamic breathwork</a>, then <a href="relaxing/'
                      'cleansing-breath.html">cleansing breath</a> flat on the '
                      'floor.'),
             ("You provide", "Floor space and room for everyone to lie flat."),
-            ("I bring", "Speaker, tuning forks, handpan, resin, spare mats."),
+            ("I bring", "Speaker, tuning forks, resin, spare mats."),
         ],
         "pull": "It sounds soft. It is not.",
         "safety": "Fast, active breathing with two breath holds. Tell me in "
@@ -2190,33 +2232,32 @@ WORKSHOPS = [
         "name": "The Kiln",
         "technique": "Sonic Neural Breathwork",
         "head": "Fifty five minutes with your eyes covered.",
-        "lead": "The rest of the three and a half hours is arriving and "
+        "lead": "The rest of the two and a half hours is arriving and "
                 "coming back.",
         "specs": [
-            ("Format", "3.5 hours. 3 to 5 people. Afternoon or evening."),
+            ("Format", "2.5 hours. 3 to 5 people. Afternoon or evening."),
             ("For", 'Screened in advance. <a href="intake.html">Intake form '
                     'and waiver</a> required.'),
-            ("Flow", 'Arrive and set intentions. Fifty five minutes of <a '
+            ("Flow", 'Arrive to handpan and set intentions. Fifty five minutes of <a '
                      'href="freedom/sonic-neural.html">Sonic Neural '
-                     'Breathwork</a>. Then a slow way back, food, and a share '
-                     'circle around the fire that nobody has to speak in. At '
-                     'my place it opens with slow breathing and an ice plunge.'),
-            ("You provide", "A private room, low light, restrooms, floor "
-                            "space, and room outside for a fire."),
-            ("I bring", "Sound system, tuning forks, handpan, resin, a second "
-                        "space holder."),
+                     'Breathwork</a>, a holotropic style of breathwork. Then a '
+                     'slow way back and a share circle that nobody has to '
+                     'speak in.'),
+            ("You provide", "A private room, low light, restrooms and floor "
+                            "space."),
+            ("I bring", "Sound system, tuning forks, handpan, resin, and a second "
+                        "space holder for groups of 6 to 10."),
         ],
         "pull": "Most people only need this once a year.",
         "safety": "Everyone completes an intake form and signs a waiver before "
                   "this one. Screening covers heart conditions, epilepsy, eye "
-                  "conditions, pregnancy, blood thinners, panic attacks and "
-                  "anything that rules out cold water.",
+                  "conditions, pregnancy, blood thinners and panic attacks.",
     },
 ]
 
 SESSION_OPTIONS = [
     ("centering", "Centering, the relaxing hour"),
-    ("first-fire", "First Fire, the Dynamic hour"),
+    ("first-fire", "First Fire, Dynamic breathwork"),
     ("retreat", "The Kiln, Sonic Neural"),
     ("group", "Bring one to my gym, studio or retreat"),
     ("unsure", "I am not sure yet"),
@@ -2277,7 +2318,6 @@ def sessions_page():
         "serviceType": "Breathwork facilitation",
         "provider": {"@id": f"{SITE_URL}/#org"},
         "areaServed": {"@type": "Country", "name": "United States"},
-        "audience": {"@type": "Audience", "audienceType": "Men"},
         "hasOfferCatalog": {
             "@type": "OfferCatalog",
             "name": "Workshops",
@@ -2290,10 +2330,10 @@ def sessions_page():
             ],
         },
     }, crumbs([("Breath library", "index.html"), ("Workshops", "workshops.html")])]
-    return f"""{head('Breathwork workshops for men - Clay & Air',
+    return f"""{head('Breathwork workshops - Clay & Air',
                      'Three breathwork workshops you can book for a gym, a '
-                     'studio or a retreat. Two run an hour. The third runs '
-                     'three and a half.',
+                     'studio or a retreat. Centering runs an hour, First '
+                     'Fire an hour and a half, and The Kiln two and a half.',
                      0, 'workshops.html', sessions_schema)}
 {header(0, 'workshops')}
 
@@ -2308,8 +2348,8 @@ def sessions_page():
           or ready to go further. I guide the pace, help you stay with what
           comes up, and leave enough time for you to land before you walk back
           into your life. That is what a screen cannot do.</p>
-          <p class="purpose">Three workshops. Two run an hour. The third takes
-          an afternoon or an evening. I host any of them at my place, or I
+          <p class="purpose">Three workshops. Centering runs an hour, First Fire
+          an hour and a half. The Kiln takes an afternoon or an evening. I host any of them at my place, or I
           bring one to yours: a gym, a studio, a farm, a retreat.</p>
           <p class="offer-go"><a class="btn btn--primary" href="#start">Start the conversation</a></p>
       </div>
@@ -2583,8 +2623,7 @@ KILN_VIDEO = BY_SLUG["sonic-neural"]["videos"][0][2]   # Ben's explanation
 
 KILN_READY = [
     ("What to bring", "A water bottle, a pillow, a blanket, an eye mask, and "
-     "lip balm, because the breathing dries your mouth out. If we are at my "
-     "place, bring something to wear in the ice plunge and a towel."),
+     "lip balm, because the breathing dries your mouth out."),
     ("Come clear", "No alcohol or drugs beforehand. I want you to have the "
      "real experience, with nothing in your system but you. Keep taking "
      "anything you are prescribed, and list it on the form."),
@@ -2593,8 +2632,9 @@ KILN_READY = [
     ("Bring an intention", "Something you want to let go of, or something you "
      "want to bring in. It does not have to be big. It gives the session a "
      "direction."),
-    ("Afterwards", "A slow way back, food, and a share circle around the "
-     "fire. Nobody has to speak. Leave the rest of the day open, and read <a "
+    ("Afterwards", "A slow way back and a share circle. Nobody has to speak. "
+     "Leave the rest of the day open, "
+     "and read <a "
      'href="integration.html">the days after</a> when you get home.'),
     ("Questions", "Ask me anything before you come. Reply to any email from "
      "me and it comes straight to me."),
@@ -3599,7 +3639,7 @@ def llms_txt():
     models, so an assistant asked "what should I do for 3am panic" can find
     the right page instead of guessing from rendered HTML."""
     out = [f"# {SITE_NAME}", "",
-           f"> Breathwork for men. A library of {len([t for t in TECHNIQUES if not t.get('placeholder')])} "
+           f"> A library of {len([t for t in TECHNIQUES if not t.get('placeholder')])} "
            "breathing techniques you can run on your own, organised by how you "
            "feel, plus workshops and retreats run in person. "
            f"{SITE_TAGLINE}", "",
@@ -3629,8 +3669,8 @@ def llms_txt():
         out.append("")
     out += ["## Working with Clay & Air", "",
             f"- [Workshops]({canonical('workshops.html')}): three bookable "
-            "workshops. Centering and First Fire run an hour; The Kiln is a "
-            "three and a half hour Sonic Neural session. Contact form on the "
+            "workshops. Centering runs an hour, First Fire an hour and a half; The Kiln is a "
+            "two and a half hour Sonic Neural session. Contact form on the "
             "page.",
             f"- [Before The Kiln]({canonical('kiln.html')}): watch Ben Holt "
             "explain Sonic Neural and read how to come in ready.",

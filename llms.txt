@@ -1,6 +1,6 @@
 # Clay & Air
 
-> Breathwork for men. A library of 19 breathing techniques you can run on your own, organised by how you feel, plus workshops and retreats run in person. Built from clay. Brought to life by breath.
+> A library of 19 breathing techniques you can run on your own, organised by how you feel, plus workshops and retreats run in person. Built from clay. Brought to life by breath.
 
 Every technique is taught by Ben Holt, learned through Awakened Breath and the 21 Day Breathwork Academy. Dynamic Breathwork and Sonic Neural Breathwork are his own designs. Clay & Air is Don Page's practice; the wording and the arrangement here are his.
 
@@ -50,7 +50,7 @@ Sonic Neural Breathwork, a facilitated ceremony rather than a technique you fit 
 
 ## Working with Clay & Air
 
-- [Workshops](https://clayandair.com/workshops): three bookable workshops. Centering and First Fire run an hour; The Kiln is a three and a half hour Sonic Neural session. Contact form on the page.
+- [Workshops](https://clayandair.com/workshops): three bookable workshops. Centering runs an hour, First Fire an hour and a half; The Kiln is a two and a half hour Sonic Neural session. Contact form on the page.
 - [Before The Kiln](https://clayandair.com/kiln): watch Ben Holt explain Sonic Neural and read how to come in ready.
 - [The Kiln intake](https://clayandair.com/intake): the intake form and waiver for The Kiln.
 - [The days after](https://clayandair.com/integration): integration notes for the days after a Sonic Neural ceremony.
