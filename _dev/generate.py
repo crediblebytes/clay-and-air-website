@@ -2154,12 +2154,18 @@ def index_page():
 # ---------------------------------------------------------------------------
 
 # Don's own words, his final wording.
-SESSION_WHY = """I know what it is to watch the life I spent decades building
-          become unrecognizable. Over a short stretch, I buried people I
-          loved, lost my marriage, my financial foundation, nearly every
-          relationship I had, and the day-to-day life I knew with my kids. I
-          found myself in a spare bedroom, starting again from scratch, while
-          the responsibility to work, provide, and keep going remained.</p>
+SESSION_WHY = """I did everything I was supposed to do. I served a mission, built a
+          career, and provided for my family. Then I started questioning all
+          of it, and in 2019 I left the church I was raised in.</p>
+
+          <p class="why">That was the foundation everything else stood on.
+          When it went, the rest followed. Over a short stretch, I buried my
+          father and others I loved, lost my marriage, my financial
+          foundation, nearly every relationship I had, and the day-to-day
+          life I knew with my kids. The people closest to me treated me like
+          I was the one who had lost it. I found myself in a spare bedroom,
+          starting again from scratch, God included, while the responsibility
+          to work, provide, and keep going remained.</p>
 
           <p class="why">I found plant medicine, and it saved me. Eventually
           that led me to breathwork, which empowered me by showing me I could
@@ -2167,9 +2173,10 @@ SESSION_WHY = """I know what it is to watch the life I spent decades building
           breath.</p>
 
           <p class="why">The rest came slowly. Eating clean. Time outside, in
-          the woods and around a fire. Breathing on purpose. I have felt the
-          pain, and I have felt the recovery that comes after it. I want to
-          help other men find their way through to the other side."""
+          the woods and around a fire. Breathing on purpose. I carried a lot
+          of anger through all of it. I have felt the pain, and I have felt
+          the peace that comes after it. I want to help anyone who lost their
+          purpose find meaning again."""
 
 WORKSHOPS = [
     {
