@@ -2357,7 +2357,7 @@ def sessions_page():
           into your life. That is what a screen cannot do.</p>
           <p class="purpose">Three workshops. Centering runs an hour, First Fire
           an hour and a half. The Kiln takes an afternoon or an evening. I host any of them at my place, or I
-          bring one to yours: a gym, a studio, a farm, a retreat.</p>
+          bring one to a shared space: a gym, a studio, a farm, a retreat.</p>
           <p class="offer-go"><a class="btn btn--primary" href="#start">Start the conversation</a></p>
       </div>
 
@@ -2470,8 +2470,8 @@ PRACTICE = [
      "what you have been holding."),
     ("Discipline",
      "The small things done daily when nobody is watching. Cold water. Clean "
-     "food. Clearing out what drains you and making room for something that "
-     "grows."),
+     "food. Moving, at the gym, in capoeira or on a hike. Clearing out what "
+     "drains you and making room for something that grows."),
     ("Daylight",
      "Real sun, early and every day. Outside, no sunglasses, the sky in your "
      "eyes and light on your skin. Your body sets its clock by the sun, and "
@@ -2557,7 +2557,7 @@ def about_page():
 
       <div class="next-step">
         <p class="label">Breathe with me</p>
-        <p>Three workshops, at my place or yours.</p>
+        <p>Three workshops, at my place or a shared space.</p>
         <a class="btn btn--primary" href="workshops.html">Workshops</a>
       </div>
     </div>
