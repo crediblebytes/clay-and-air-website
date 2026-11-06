@@ -2468,9 +2468,11 @@ def sessions_page():
 # Prices stay off the page, as they do on the workshops page.
 # ---------------------------------------------------------------------------
 
-MISSION = ("I help divorced dads who left the church turn anger and isolation "
-           "into peace and brotherhood, and find God again where it always "
-           "was: inside them, in nature and in the breath.")
+# The public line, broad enough for every sub niche. The narrower mission
+# statement (divorced dads who left the church) stays in the worksheet.
+MISSION = ("Whether you left the church, lost the marriage or left the unit, "
+           "I help you turn anger and isolation into peace and brotherhood, "
+           "and find meaning again.")
 
 RECLAIM_SPECS = [
     ("Who it's for", "You left the church, or left special operations, and "
@@ -2495,13 +2497,19 @@ RECLAIM_SPECS = [
 RECLAIM_PHASES = [
     ("Slake", "Weeks 1 to 4",
      "Soak it down. Get honest about what was lost and give your nervous "
-     "system a floor to stand on."),
+     "system a floor to stand on.",
+     ("assets/coaching/slake.jpg",
+      "Several pairs of hands pressed into wet gray clay")),
     ("Wedge", "Weeks 5 to 8",
      "Work out the anger and the air pockets. Wedging is literally slamming "
-     "clay against a table."),
+     "clay against a table.",
+     ("assets/coaching/wedge.jpg",
+      "Hands on a canvas wedging table beside a block of clay and three pots")),
     ("Throw", "Weeks 9 to 12",
      "Rebuild on center. Identity, God, discipline and brotherhood, on your "
-     "own terms."),
+     "own terms.",
+     ("assets/coaching/throw.jpg",
+      "A potter trimming a bowl on a spinning wheel")),
 ]
 
 def coaching_page():
@@ -2510,12 +2518,14 @@ def coaching_page():
         for k, v in RECLAIM_SPECS)
     phases = "\n".join(
         f"""          <article class="practice-card">
+            <img src="{img[0]}" alt="{img[1]}"
+              width="960" height="720" loading="lazy">
             <div class="practice-body">
               <p class="label">{name} <span class="dot">&middot;</span> {weeks}</p>
               <p>{body}</p>
             </div>
           </article>"""
-        for name, weeks, body in RECLAIM_PHASES)
+        for name, weeks, body, img in RECLAIM_PHASES)
     schema = [{
         "@type": "Service",
         "@id": f"{SITE_URL}/coaching#service",
