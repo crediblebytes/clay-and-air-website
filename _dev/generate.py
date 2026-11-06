@@ -1368,6 +1368,7 @@ def header(depth, current=None):
         </div>
       </details>
       {nav('workshops.html', 'Workshops', 'workshops')}
+      {nav('coaching.html', 'Coaching', 'coaching')}
       {nav('about.html', 'About', 'about')}
     </nav>
   </div>
@@ -2455,6 +2456,192 @@ def sessions_page():
   );
 }})();
 </script>
+{footer(0)}"""
+
+
+# ---------------------------------------------------------------------------
+# Coaching. Reclaim, the twelve week program, on a page of its own with its
+# own form ("coaching"), so a coaching enquiry never lands in the workshops
+# inbox. Laid out the way Jennie's "How to work with me" sheet is: what it is,
+# who it is for, what is included, where. The copy mirrors the Reclaim flyer
+# (the "Reclaim Coaching Flyer" design canvas), so change both together.
+# Prices stay off the page, as they do on the workshops page.
+# ---------------------------------------------------------------------------
+
+MISSION = ("I help divorced dads who left the church turn anger and isolation "
+           "into peace and brotherhood, and find God again where it always "
+           "was: inside them, in nature and in the breath.")
+
+RECLAIM_SPECS = [
+    ("Who it's for", "You left the church, or left special operations, and "
+                     "lost the foundation with it: faith, marriage and "
+                     "community at once. You are holding it together at work "
+                     "and coming apart everywhere else."),
+    ("Included", "Twelve weekly sessions, one on one, 60 minutes each. "
+                 "Coaching through Slake, Wedge and Throw. A daily practice "
+                 "of breath, cold, sun and movement. Guided tracks, an "
+                 "Exchange Day Reset for the car before every exchange, and a "
+                 "one page practice sheet each week. Reviews at weeks 1, 6 "
+                 "and 12 against where you started."),
+    ("Where", "On Zoom, once a week, wherever you are."),
+    ("Guarantee", "Show up to the weekly call, do the daily practice and the "
+                  "homework, and by week 12 you will have a daily practice "
+                  "you run on your own, a calm response for your hardest "
+                  "moments, and brothers you can call. If you do the work and "
+                  "don't have all three, I keep coaching you free until you "
+                  "do."),
+]
+
+RECLAIM_PHASES = [
+    ("Slake", "Weeks 1 to 4",
+     "Soak it down. Get honest about what was lost and give your nervous "
+     "system a floor to stand on."),
+    ("Wedge", "Weeks 5 to 8",
+     "Work out the anger and the air pockets. Wedging is literally slamming "
+     "clay against a table."),
+    ("Throw", "Weeks 9 to 12",
+     "Rebuild on center. Identity, God, discipline and brotherhood, on your "
+     "own terms."),
+]
+
+def coaching_page():
+    specs = "\n".join(
+        f"            <dt>{k}</dt>\n            <dd>{v}</dd>"
+        for k, v in RECLAIM_SPECS)
+    phases = "\n".join(
+        f"""          <article class="practice-card">
+            <div class="practice-body">
+              <p class="label">{name} <span class="dot">&middot;</span> {weeks}</p>
+              <p>{body}</p>
+            </div>
+          </article>"""
+        for name, weeks, body in RECLAIM_PHASES)
+    schema = [{
+        "@type": "Service",
+        "@id": f"{SITE_URL}/coaching#service",
+        "name": "Reclaim, 12 week private coaching",
+        "serviceType": "Coaching",
+        "description": MISSION,
+        "provider": {"@id": f"{SITE_URL}/#org"},
+        "areaServed": {"@type": "Country", "name": "United States"},
+    }, crumbs([("Breath library", "index.html"), ("Coaching", "coaching.html")])]
+    return f"""{head('Reclaim coaching - Clay & Air',
+                     'Reclaim is twelve weeks of one on one coaching: '
+                     'coaching, guided breathwork and a daily practice, on '
+                     'Zoom.',
+                     0, 'coaching.html', schema)}
+{header(0, 'coaching')}
+
+<main>
+  <section class="technique">
+    <div class="wrap">
+      <div class="intake-open">
+          <p class="label">Coaching</p>
+          <h1>Reclaim</h1>
+          <p class="purpose">{MISSION}</p>
+          <p class="purpose">Potters reclaim dried, broken clay by soaking it
+          down, wedging out the air pockets and throwing it again. Reclaim is
+          twelve weeks of one on one coaching built the same way.</p>
+          <p class="offer-go"><a class="btn btn--primary" href="#start">Start the conversation</a></p>
+      </div>
+
+      <div class="offers">
+      <article class="offer" id="reclaim">
+        <img class="offer-img" src="assets/coaching/firepit.jpg" alt="Three chairs around a brick fire pit in a sunlit backyard" width="1400" height="788" loading="lazy" style="object-position: 50% 10%">
+        <div class="offer-main">
+          <p class="offer-name">12 week private coaching</p>
+          <h2>Reclaim</h2>
+          <p class="offer-head">From anger and isolation to peace and brotherhood.</p>
+          <p class="offer-lead">Coaching, guided breathwork and a short daily
+          practice, built around a full-time job. Mine and yours.</p>
+          <p class="offer-meta"><span>12 weeks</span> <span class="dot">&middot;</span> <span>One on one</span> <span class="dot">&middot;</span> <span>60 minutes a week</span></p>
+          <p class="offer-go btn-row"><a class="btn btn--secondary" href="#start">Ask about Reclaim</a></p>
+        </div>
+        <div class="offer-detail">
+          <dl class="offer-specs">
+{specs}
+          </dl>
+          <p class="offer-safety">Coaching, not therapy or medical care. Every
+          client starts with a short call and an intake. If you are in crisis,
+          call or text 988, and veterans press 1.</p>
+        </div>
+      </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="wrap">
+      <p class="label">The path</p>
+      <h2 class="practice-title">Slake. Wedge. Throw.</h2>
+      <p class="practice-intro">Twelve weeks in three phases, four weeks
+      each. The Practice runs through all of it: Breath, Discipline,
+      Daylight.</p>
+      <div class="practice-grid">
+{phases}
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight" id="start">
+    <div class="wrap">
+      <div class="intake">
+        <div class="intake-why">
+          <p class="label">Where we meet</p>
+          <p class="why">On Zoom, one on one, for an hour a week. It fits
+          around a full-time job and your weekends with your kids.</p>
+          <p class="label label--gap">What happens next</p>
+          <p class="why">I read every message myself and reply within a couple
+          of days. We set up a short call to see if it fits. If it does, you
+          fill in an intake and we pick a start date.</p>
+        </div>
+
+        <div class="form-card">
+          <form class="intake-form" name="coaching" method="POST"
+            action="/thanks.html" data-netlify="true"
+            netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="coaching">
+            <p class="pot">
+              <label>Leave this empty <input name="bot-field"></label>
+            </p>
+
+            <p class="label">Ask about Reclaim</p>
+            <p class="small muted">Tell me a little about where you are and
+              what you want to change. Plain words are enough. I read every
+              message myself.</p>
+
+            <div class="field">
+              <label for="f-name">Name</label>
+              <input id="f-name" name="name" type="text" required>
+            </div>
+
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email"
+                placeholder="you@work.com" required>
+            </div>
+
+            <div class="field">
+              <label for="f-notes">Where you are right now</label>
+              <textarea id="f-notes" name="notes"
+                placeholder="A few lines about what is going on and what you want to change."></textarea>
+            </div>
+
+            <label class="check">
+              <input type="checkbox" name="list" value="yes" checked>
+              <span class="check-body">Send me the occasional note
+                <span class="hint">A few times a month. One practice, and why
+                it works. Unsubscribe from any of them.</span>
+              </span>
+            </label>
+
+            <button type="submit" class="btn btn--primary btn--full">Start the conversation</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 {footer(0)}"""
 
 
@@ -3632,7 +3819,7 @@ def sitemap_xml(paths):
         if p.startswith("thanks"):
             continue                      # a form receipt is not a landing page
         pri = "1.0" if p == "index.html" else (
-            "0.9" if p in ("workshops.html",) or p.endswith("/index.html") else "0.8")
+            "0.9" if p in ("workshops.html", "coaching.html") or p.endswith("/index.html") else "0.8")
         rows.append(f"  <url>\n    <loc>{canonical(p)}</loc>\n"
                     f"    <lastmod>{today}</lastmod>\n"
                     f"    <priority>{pri}</priority>\n  </url>")
@@ -3679,6 +3866,9 @@ def llms_txt():
             "workshops. Centering runs an hour, First Fire an hour and a half; The Kiln is a "
             "two and a half hour Sonic Neural session. Contact form on the "
             "page.",
+            f"- [Reclaim coaching]({canonical('coaching.html')}): twelve "
+            "weeks of one on one coaching, guided breathwork and a daily "
+            "practice, on Zoom. Contact form on the page.",
             f"- [Before The Kiln]({canonical('kiln.html')}): watch Ben Holt "
             "explain Sonic Neural and read how to come in ready.",
             f"- [The Kiln intake]({canonical('intake.html')}): the intake "
@@ -3703,10 +3893,11 @@ def write(path, content):
 
 
 if __name__ == "__main__":
-    paths = ["index.html", "workshops.html", "kiln.html", "intake.html",
-             "integration.html", "about.html", "thanks.html"]
+    paths = ["index.html", "workshops.html", "coaching.html", "kiln.html",
+             "intake.html", "integration.html", "about.html", "thanks.html"]
     write("index.html", index_page())
     write("workshops.html", sessions_page())
+    write("coaching.html", coaching_page())
     write("kiln.html", kiln_page())
     write("intake.html", intake_page())
     write("integration.html", integration_page())
